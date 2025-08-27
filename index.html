@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Input with Eye Toggle</title>
+  <title>Password Checker with Eye Toggle</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,22 +11,31 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f0f0f0;
+      background: #f4f4f4;
+    }
+
+    .box {
+      background: white;
+      padding: 20px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
     }
 
     .input-container {
       position: relative;
-      width: 250px;
+      margin-top: 15px;
     }
 
     input[type="password"],
     input[type="text"] {
       width: 100%;
-      padding: 10px;
-      padding-right: 40px; /* space for the eye */
-      font-size: 16px;
+      padding: 12px;
+      padding-right: 40px; /* space for eye */
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 16px;
     }
 
     .toggle-eye {
@@ -38,22 +47,69 @@
       font-size: 18px;
       user-select: none;
     }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      background: #0078ff;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
 
-  <div class="input-container">
-    <input type="password" id="password" placeholder="Enter password">
-    <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+  <div class="box">
+    <h2>Password Checker</h2>
+
+    <div class="input-container">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="toggle-eye" id="eye" onclick="togglePassword()">👁️</span>
+    </div>
+
+    <button onclick="checkPassword()">Check Password</button>
+    <div class="result" id="result"></div>
   </div>
 
   <script>
     function togglePassword() {
       const passwordInput = document.getElementById("password");
+      const eyeIcon = document.getElementById("eye");
+
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
+        eyeIcon.textContent = "🚫👁️"; // change icon when visible
       } else {
         passwordInput.type = "password";
+        eyeIcon.textContent = "👁️"; // back to normal eye
+      }
+    }
+
+    function checkPassword() {
+      const password = document.getElementById("password").value;
+      const result = document.getElementById("result");
+
+      if (password.length < 6) {
+        result.textContent = "❌ Too short (min 6 characters)";
+        result.style.color = "red";
+      } else if (password.match(/[0-9]/) && password.match(/[A-Z]/) && password.match(/[a-z]/)) {
+        result.textContent = "✅ Strong password";
+        result.style.color = "green";
+      } else {
+        result.textContent = "⚠️ Weak password (add numbers, upper & lowercase)";
+        result.style.color = "orange";
       }
     }
   </script>
