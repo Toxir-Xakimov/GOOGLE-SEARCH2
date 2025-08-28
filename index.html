@@ -1,202 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Password Strength Checker</title>
+  <meta charset="UTF-8">
+  <title>Password Checker</title>
   <style>
     body {
-      font-family: "Inter", Arial, sans-serif;
-      background-color: #f3f4f6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #2b0057; /* Dark violet background */
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
     .container {
       background: #fff;
-      padding: 2rem;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      max-width: 400px;
-      width: 100%;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      width: 400px;
+      max-width: 90%;
     }
 
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #111827;
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #00ffff; /* cyan accent */
     }
 
     .input-group {
       position: relative;
-      margin-bottom: 1rem;
+      margin-bottom: 15px;
     }
 
-    input[type="password"], input[type="text"] {
+    input[type="password"],
+    input[type="text"] {
       width: 100%;
-      padding: 0.75rem 2.5rem 0.75rem 0.75rem;
-      border: 1px solid #d1d5db;
+      padding: 12px 40px 12px 12px;
+      border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
-      outline: none;
-      transition: border 0.2s;
     }
 
-    input:focus {
-      border-color: #3b82f6;
-    }
-
-    .toggle-btn {
+    .toggle-eye {
       position: absolute;
-      right: 0.75rem;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 1rem;
-      color: #6b7280;
+      font-size: 1.2rem;
+      color: #00baba; /* cyan detail */
     }
 
-    .strength-meter {
+    .strength-bar {
       height: 8px;
       border-radius: 4px;
-      margin: 0.5rem 0;
-      background: #e5e7eb;
+      background: #eee;
+      margin: 10px 0;
       overflow: hidden;
     }
 
     .strength-fill {
       height: 100%;
       width: 0%;
-      background: #ef4444;
-      transition: width 0.3s, background 0.3s;
+      background: #00ffff; /* cyan fill */
+      transition: width 0.3s;
     }
 
-    .criteria {
-      margin: 0.5rem 0 1rem;
-      font-size: 0.875rem;
-      color: #374151;
+    ul.criteria {
+      list-style: none;
+      padding: 0;
+      font-size: 0.9rem;
     }
 
-    .criteria span {
-      display: block;
-      margin: 0.25rem 0;
+    ul.criteria li {
+      margin-bottom: 6px;
+      color: #666;
+    }
+
+    ul.criteria li.valid {
+      color: #00baba; /* cyan valid */
+      font-weight: bold;
+    }
+
+    .stats {
+      margin: 15px 0;
+      font-size: 0.9rem;
+      color: #444;
     }
 
     .btn {
       display: inline-block;
-      background: #3b82f6;
-      color: #fff;
-      padding: 0.6rem 1rem;
+      padding: 10px 16px;
+      background: #00baba;
+      color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
       transition: background 0.2s;
+      font-size: 1rem;
     }
 
     .btn:hover {
-      background: #2563eb;
-    }
-
-    .small {
-      font-size: 0.8rem;
-      color: #6b7280;
-      margin-top: 0.5rem;
+      background: #009999;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Password Strength Checker</h2>
+    <h1>Password Checker</h1>
 
     <div class="input-group">
-      <input type="password" id="password" placeholder="Enter password" />
-      <span class="toggle-btn" onclick="togglePassword()">👁</span>
+      <input type="password" id="password" placeholder="Enter password">
+      <span class="toggle-eye" onclick="togglePassword()">👁</span>
     </div>
 
-    <div class="strength-meter">
+    <div class="strength-bar">
       <div class="strength-fill" id="strength-fill"></div>
     </div>
 
-    <div class="criteria" id="criteria">
-      <span id="length">❌ At least 8 characters</span>
-      <span id="upper">❌ At least one uppercase letter</span>
-      <span id="number">❌ At least one number</span>
-      <span id="special">❌ At least one special character</span>
+    <ul class="criteria">
+      <li id="length">At least 8 characters</li>
+      <li id="uppercase">Contains uppercase</li>
+      <li id="lowercase">Contains lowercase</li>
+      <li id="number">Contains number</li>
+      <li id="special">Contains special character</li>
+    </ul>
+
+    <div class="stats">
+      <div>Entropy: <span id="entropy">0</span> bits</div>
+      <div>Crack time: <span id="crack-time">Instant</span></div>
     </div>
 
-    <button class="btn" onclick="generatePassword()">Generate Secure Password</button>
-    <div class="small" id="generated"></div>
+    <button class="btn" onclick="generatePassword()">Generate Strong Password</button>
   </div>
 
   <script>
-    const passwordInput = document.getElementById("password");
-    const strengthFill = document.getElementById("strength-fill");
+    const passwordInput = document.getElementById('password');
+    const strengthFill = document.getElementById('strength-fill');
 
-    passwordInput.addEventListener("input", checkStrength);
+    passwordInput.addEventListener('input', updateStrength);
 
     function togglePassword() {
-      passwordInput.type =
-        passwordInput.type === "password" ? "text" : "password";
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
     }
 
-    function checkStrength() {
-      const value = passwordInput.value;
-      let strength = 0;
+    function updateStrength() {
+      const val = passwordInput.value;
+      let score = 0;
 
-      if (value.length >= 8) {
-        document.getElementById("length").textContent = "✅ At least 8 characters";
-        strength++;
-      } else {
-        document.getElementById("length").textContent = "❌ At least 8 characters";
-      }
+      // criteria checks
+      if (val.length >= 8) { score++; document.getElementById("length").classList.add("valid"); }
+      else document.getElementById("length").classList.remove("valid");
 
-      if (/[A-Z]/.test(value)) {
-        document.getElementById("upper").textContent = "✅ At least one uppercase letter";
-        strength++;
-      } else {
-        document.getElementById("upper").textContent = "❌ At least one uppercase letter";
-      }
+      if (/[A-Z]/.test(val)) { score++; document.getElementById("uppercase").classList.add("valid"); }
+      else document.getElementById("uppercase").classList.remove("valid");
 
-      if (/\d/.test(value)) {
-        document.getElementById("number").textContent = "✅ At least one number";
-        strength++;
-      } else {
-        document.getElementById("number").textContent = "❌ At least one number";
-      }
+      if (/[a-z]/.test(val)) { score++; document.getElementById("lowercase").classList.add("valid"); }
+      else document.getElementById("lowercase").classList.remove("valid");
 
-      if (/[@$!%*?&]/.test(value)) {
-        document.getElementById("special").textContent = "✅ At least one special character";
-        strength++;
-      } else {
-        document.getElementById("special").textContent = "❌ At least one special character";
-      }
+      if (/[0-9]/.test(val)) { score++; document.getElementById("number").classList.add("valid"); }
+      else document.getElementById("number").classList.remove("valid");
 
-      const percentage = (strength / 4) * 100;
-      strengthFill.style.width = percentage + "%";
+      if (/[^A-Za-z0-9]/.test(val)) { score++; document.getElementById("special").classList.add("valid"); }
+      else document.getElementById("special").classList.remove("valid");
 
-      if (strength <= 1) strengthFill.style.background = "#ef4444"; // red
-      else if (strength === 2) strengthFill.style.background = "#f59e0b"; // yellow
-      else if (strength === 3) strengthFill.style.background = "#3b82f6"; // blue
-      else strengthFill.style.background = "#10b981"; // green
+      // update bar
+      strengthFill.style.width = (score / 5) * 100 + "%";
+
+      // entropy + crack time (simple estimation)
+      let pool = 0;
+      if (/[a-z]/.test(val)) pool += 26;
+      if (/[A-Z]/.test(val)) pool += 26;
+      if (/[0-9]/.test(val)) pool += 10;
+      if (/[^A-Za-z0-9]/.test(val)) pool += 32;
+
+      let entropy = (val.length * Math.log2(pool)) || 0;
+      document.getElementById("entropy").innerText = entropy.toFixed(1);
+
+      let guesses = Math.pow(2, entropy);
+      let time = "Instant";
+      if (guesses > 1e6) time = "Seconds";
+      if (guesses > 1e9) time = "Minutes";
+      if (guesses > 1e12) time = "Hours";
+      if (guesses > 1e15) time = "Days";
+      if (guesses > 1e18) time = "Years";
+      if (guesses > 1e21) time = "Centuries";
+
+      document.getElementById("crack-time").innerText = time;
     }
 
     function generatePassword() {
-      const chars =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*?&";
-      let password = "";
-      for (let i = 0; i < 12; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+      let pass = "";
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      document.getElementById("generated").textContent =
-        "Generated: " + password;
-      passwordInput.value = password;
-      checkStrength();
+      passwordInput.value = pass;
+      updateStrength();
     }
   </script>
 </body>
