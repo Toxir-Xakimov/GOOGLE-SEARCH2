@@ -2,195 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Password Checker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Stylish Box</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #2b0057; /* Dark violet */
+      font-family: 'Arial', sans-serif;
+      background-color: #4B0082; /* dark violet */
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      transition: background-color 0.5s;
     }
 
-    .container {
-      background: #fff;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 400px;
-      max-width: 90%;
-    }
-
-    h1 {
-      font-size: 1.3rem;
-      margin-bottom: 15px;
+    .box {
+      background-color: #1AC6FF; /* cyan */
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       text-align: center;
-      color: #00cccc; /* Cyan accent */
+      width: 400px;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    .input-group {
-      position: relative;
-      margin-bottom: 10px;
+    .box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
-    input[type="password"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px 35px 10px 10px;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-      font-size: 0.95rem;
-    }
-
-    .toggle-eye {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1rem;
-      color: #00cccc;
-    }
-
-    .strength-bar {
-      height: 6px;
-      background: #eee;
-      margin: 10px 0;
-    }
-
-    .strength-fill {
-      height: 100%;
-      width: 0%;
-      background: #00cccc;
-      transition: width 0.2s;
-    }
-
-    ul.criteria {
-      list-style: none;
-      padding: 0;
-      margin: 10px 0;
-      font-size: 0.85rem;
-      color: #555;
-    }
-
-    ul.criteria li.valid {
-      color: #00cccc;
-      font-weight: bold;
-    }
-
-    .stats {
-      font-size: 0.85rem;
-      margin-top: 10px;
-      color: #333;
-    }
-
-    .btn {
-      width: 100%;
+    input {
+      width: 80%;
       padding: 10px;
-      background: #00cccc;
-      color: white;
+      margin: 10px 0;
       border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
     }
 
-    .btn:hover {
-      background: #009999;
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #FF4081;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #E91E63;
+    }
+
+    .tip {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #fffacd;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Password Checker</h1>
-
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Enter password">
-      <span class="toggle-eye" onclick="togglePassword()">👁</span>
-    </div>
-
-    <div class="strength-bar">
-      <div class="strength-fill" id="strength-fill"></div>
-    </div>
-
-    <ul class="criteria">
-      <li id="length">At least 8 characters</li>
-      <li id="uppercase">Contains uppercase</li>
-      <li id="lowercase">Contains lowercase</li>
-      <li id="number">Contains number</li>
-      <li id="special">Contains special character</li>
-    </ul>
-
-    <div class="stats">
-      <div>Entropy: <span id="entropy">0</span> bits</div>
-      <div>Crack time: <span id="crack-time">Instant</span></div>
-    </div>
-
-    <button class="btn" onclick="generatePassword()">Generate Strong Password</button>
+  <div class="box">
+    <h1>Pro Box</h1>
+    <input type="text" id="userInput" placeholder="Type something..." />
+    <br>
+    <button onclick="copyText()">Copy Text</button>
+    <button onclick="generateTip()">Random Tip</button>
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <p class="tip" id="tipArea">Your pro tips will appear here.</p>
   </div>
 
   <script>
-    const passwordInput = document.getElementById('password');
-    const strengthFill = document.getElementById('strength-fill');
-
-    passwordInput.addEventListener('input', updateStrength);
-
-    function togglePassword() {
-      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    // Copy input value to clipboard
+    function copyText() {
+      const input = document.getElementById('userInput');
+      navigator.clipboard.writeText(input.value)
+        .then(() => alert("Text copied to clipboard!"))
+        .catch(() => alert("Failed to copy."));
     }
 
-    function updateStrength() {
-      const val = passwordInput.value;
-      let score = 0;
-
-      if (val.length >= 8) { score++; document.getElementById("length").classList.add("valid"); }
-      else document.getElementById("length").classList.remove("valid");
-
-      if (/[A-Z]/.test(val)) { score++; document.getElementById("uppercase").classList.add("valid"); }
-      else document.getElementById("uppercase").classList.remove("valid");
-
-      if (/[a-z]/.test(val)) { score++; document.getElementById("lowercase").classList.add("valid"); }
-      else document.getElementById("lowercase").classList.remove("valid");
-
-      if (/[0-9]/.test(val)) { score++; document.getElementById("number").classList.add("valid"); }
-      else document.getElementById("number").classList.remove("valid");
-
-      if (/[^A-Za-z0-9]/.test(val)) { score++; document.getElementById("special").classList.add("valid"); }
-      else document.getElementById("special").classList.remove("valid");
-
-      strengthFill.style.width = (score / 5) * 100 + "%";
-
-      let pool = 0;
-      if (/[a-z]/.test(val)) pool += 26;
-      if (/[A-Z]/.test(val)) pool += 26;
-      if (/[0-9]/.test(val)) pool += 10;
-      if (/[^A-Za-z0-9]/.test(val)) pool += 32;
-
-      let entropy = (val.length * Math.log2(pool)) || 0;
-      document.getElementById("entropy").innerText = entropy.toFixed(1);
-
-      let guesses = Math.pow(2, entropy);
-      let time = "Instant";
-      if (guesses > 1e6) time = "Seconds";
-      if (guesses > 1e9) time = "Minutes";
-      if (guesses > 1e12) time = "Hours";
-      if (guesses > 1e15) time = "Days";
-      if (guesses > 1e18) time = "Years";
-      if (guesses > 1e21) time = "Centuries";
-
-      document.getElementById("crack-time").innerText = time;
+    // Generate random pro tip
+    const tips = [
+      "Use strong passwords.",
+      "Refresh your mind every hour.",
+      "Try new colors for style.",
+      "Organize your code neatly.",
+      "Focus on UX, not just UI."
+    ];
+    function generateTip() {
+      const tipArea = document.getElementById('tipArea');
+      tipArea.textContent = tips[Math.floor(Math.random() * tips.length)];
     }
 
-    function generatePassword() {
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-      let pass = "";
-      for (let i = 0; i < 16; i++) {
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    // Toggle dark/light mode
+    function toggleDarkMode() {
+      const body = document.body;
+      if (body.style.backgroundColor === 'white') {
+        body.style.backgroundColor = '#4B0082';
+        body.style.color = 'white';
+      } else {
+        body.style.backgroundColor = 'white';
+        body.style.color = '#4B0082';
       }
-      passwordInput.value = pass;
-      updateStrength();
     }
   </script>
 </body>
