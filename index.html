@@ -3,111 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro Stylish Box</title>
+  <title>Professional Box</title>
   <style>
+    /* Body style: clean, greyish background */
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #4B0082; /* dark violet */
-      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      transition: background-color 0.5s;
     }
 
+    /* Centered box with soft border radius */
     .box {
-      background-color: #1AC6FF; /* cyan */
+      background-color: #fff;
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border-radius: 8px; /* subtle rounding */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
       text-align: center;
-      width: 400px;
-      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    .box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    /* Heading style */
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #222;
     }
 
+    /* Input style */
     input {
-      width: 80%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      outline: none;
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
     }
 
+    input:focus {
+      border-color: #007BFF; /* subtle focus color */
+    }
+
+    /* Buttons: modern flat style */
     button {
       padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #FF4081;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
       margin: 5px;
-      transition: 0.3s;
+      border: none;
+      border-radius: 6px;
+      background-color: #007BFF;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     button:hover {
-      background-color: #E91E63;
+      background-color: #0056b3;
+      transform: translateY(-2px);
     }
 
     .tip {
+      margin-top: 12px;
       font-size: 14px;
-      margin-top: 10px;
-      color: #fffacd;
+      color: #555;
     }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>Pro Box</h1>
-    <input type="text" id="userInput" placeholder="Type something..." />
+    <h1>Business Box</h1>
+    <input type="text" id="userInput" placeholder="Enter text..." />
     <br>
-    <button onclick="copyText()">Copy Text</button>
-    <button onclick="generateTip()">Random Tip</button>
-    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-    <p class="tip" id="tipArea">Your pro tips will appear here.</p>
+    <button onclick="copyText()">Copy</button>
+    <button onclick="generateTip()">Show Tip</button>
+    <p class="tip" id="tipArea">Your tips will appear here.</p>
   </div>
 
   <script>
-    // Copy input value to clipboard
+    // Copy input value
     function copyText() {
       const input = document.getElementById('userInput');
       navigator.clipboard.writeText(input.value)
-        .then(() => alert("Text copied to clipboard!"))
+        .then(() => alert("Text copied!"))
         .catch(() => alert("Failed to copy."));
     }
 
-    // Generate random pro tip
+    // Random tips generator
     const tips = [
-      "Use strong passwords.",
-      "Refresh your mind every hour.",
-      "Try new colors for style.",
-      "Organize your code neatly.",
-      "Focus on UX, not just UI."
+      "Keep your code clean.",
+      "Use consistent naming.",
+      "Optimize for performance.",
+      "Write readable comments.",
+      "Test before deployment."
     ];
+
     function generateTip() {
       const tipArea = document.getElementById('tipArea');
       tipArea.textContent = tips[Math.floor(Math.random() * tips.length)];
-    }
-
-    // Toggle dark/light mode
-    function toggleDarkMode() {
-      const body = document.body;
-      if (body.style.backgroundColor === 'white') {
-        body.style.backgroundColor = '#4B0082';
-        body.style.color = 'white';
-      } else {
-        body.style.backgroundColor = 'white';
-        body.style.color = '#4B0082';
-      }
     }
   </script>
 </body>
