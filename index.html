@@ -3,39 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Professional Box</title>
+  <title>Password Checker</title>
   <style>
-    /* Body style: clean, greyish background */
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f5f5;
-      color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #333;
     }
 
-    /* Centered box with soft border radius */
     .box {
       background-color: #fff;
       padding: 40px;
-      border-radius: 8px; /* subtle rounding */
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       width: 360px;
       text-align: center;
     }
 
-    /* Heading style */
     h1 {
       margin-bottom: 20px;
       font-size: 24px;
       font-weight: 600;
-      color: #222;
     }
 
-    /* Input style */
     input {
       width: 100%;
       padding: 10px 12px;
@@ -48,10 +43,9 @@
     }
 
     input:focus {
-      border-color: #007BFF; /* subtle focus color */
+      border-color: #007BFF;
     }
 
-    /* Buttons: modern flat style */
     button {
       padding: 10px 20px;
       margin: 5px;
@@ -69,44 +63,49 @@
       transform: translateY(-2px);
     }
 
-    .tip {
-      margin-top: 12px;
+    .strength {
+      margin-top: 10px;
       font-size: 14px;
       color: #555;
+    }
+
+    .strength.weak {
+      color: #e74c3c;
+    }
+    .strength.medium {
+      color: #f1c40f;
+    }
+    .strength.strong {
+      color: #2ecc71;
     }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>Business Box</h1>
-    <input type="text" id="userInput" placeholder="Enter text..." />
+    <h1>Password Checker</h1>
+    <input type="password" id="passwordInput" placeholder="Enter password..." />
     <br>
-    <button onclick="copyText()">Copy</button>
-    <button onclick="generateTip()">Show Tip</button>
-    <p class="tip" id="tipArea">Your tips will appear here.</p>
+    <button onclick="checkPassword()">Check Strength</button>
+    <p class="strength" id="strengthText">Your password strength will appear here.</p>
   </div>
 
   <script>
-    // Copy input value
-    function copyText() {
-      const input = document.getElementById('userInput');
-      navigator.clipboard.writeText(input.value)
-        .then(() => alert("Text copied!"))
-        .catch(() => alert("Failed to copy."));
-    }
+    function checkPassword() {
+      const pwd = document.getElementById('passwordInput').value;
+      const strengthText = document.getElementById('strengthText');
+      let strength = "Weak";
+      let className = "weak";
 
-    // Random tips generator
-    const tips = [
-      "Keep your code clean.",
-      "Use consistent naming.",
-      "Optimize for performance.",
-      "Write readable comments.",
-      "Test before deployment."
-    ];
+      if (pwd.length >= 8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[\W]/.test(pwd)) {
+        strength = "Strong";
+        className = "strong";
+      } else if (pwd.length >= 6 && ((/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) || (/[A-Z]/.test(pwd) && /[\W]/.test(pwd)))) {
+        strength = "Medium";
+        className = "medium";
+      }
 
-    function generateTip() {
-      const tipArea = document.getElementById('tipArea');
-      tipArea.textContent = tips[Math.floor(Math.random() * tips.length)];
+      strengthText.textContent = `Password strength: ${strength}`;
+      strengthText.className = `strength ${className}`;
     }
   </script>
 </body>
