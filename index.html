@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Password Strength Checker</title>
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
@@ -33,10 +37,12 @@
     .input-group {
       position: relative;
       margin-bottom: 15px;
+      width: 100%;
     }
 
     input {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px;
       padding-right: 40px;
       border: 1px solid #ccc;
@@ -56,7 +62,7 @@
       right: 12px;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 16px;
+      font-size: 20px;
       color: #555;
     }
 
@@ -80,15 +86,21 @@
     }
 
     .criteria span {
-      display: block;
+      display: flex;
+      align-items: center;
       margin-bottom: 4px;
     }
 
-    .valid {
+    .criteria .icon {
+      font-size: 16px;
+      margin-right: 6px;
+    }
+
+    .valid .icon {
       color: #2ecc71;
     }
 
-    .invalid {
+    .invalid .icon {
       color: #e74c3c;
     }
 
@@ -122,103 +134,110 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Password Checker</h2>
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Enter your password">
-      <span class="toggle-eye" onclick="togglePassword()">👁️</span>
-    </div>
 
-    <div class="strength">
-      <div class="strength-bar" id="strength-bar"></div>
-    </div>
+<div class="container">
+  <h2>Password Checker</h2>
 
-    <div class="criteria">
-      <span id="length" class="invalid">❌ At least 8 characters</span>
-      <span id="uppercase" class="invalid">❌ Uppercase letter</span>
-      <span id="lowercase" class="invalid">❌ Lowercase letter</span>
-      <span id="number" class="invalid">❌ Number</span>
-      <span id="special" class="invalid">❌ Special character</span>
-    </div>
-
-    <div class="entropy" id="entropy">Entropy: 0 bits</div>
-    <div class="crack-time" id="crack-time">Crack time: Instant</div>
-
-    <div class="generator">
-      <button onclick="generatePassword()">Generate Password</button>
-      <button onclick="copyPassword()">Copy</button>
-    </div>
+  <div class="input-group">
+    <input type="password" id="password" placeholder="Enter your password">
+    <span class="toggle-eye material-icons" onclick="togglePassword()">visibility</span>
   </div>
 
-  <script>
-    const passwordInput = document.getElementById('password');
-    const strengthBar = document.getElementById('strength-bar');
-    const entropyEl = document.getElementById('entropy');
-    const crackTimeEl = document.getElementById('crack-time');
+  <div class="strength">
+    <div class="strength-bar" id="strength-bar"></div>
+  </div>
 
-    function togglePassword() {
-      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+  <div class="criteria">
+    <span id="length" class="invalid"><span class="material-icons icon">close</span>At least 8 characters</span>
+    <span id="uppercase" class="invalid"><span class="material-icons icon">close</span>Uppercase letter</span>
+    <span id="lowercase" class="invalid"><span class="material-icons icon">close</span>Lowercase letter</span>
+    <span id="number" class="invalid"><span class="material-icons icon">close</span>Number</span>
+    <span id="special" class="invalid"><span class="material-icons icon">close</span>Special character</span>
+  </div>
+
+  <div class="entropy" id="entropy">Entropy: 0 bits</div>
+  <div class="crack-time" id="crack-time">Crack time: Instant</div>
+
+  <div class="generator">
+    <button onclick="generatePassword()">Generate Password</button>
+    <button onclick="copyPassword()">Copy</button>
+  </div>
+</div>
+
+<script>
+  const passwordInput = document.getElementById('password');
+  const strengthBar = document.getElementById('strength-bar');
+
+  passwordInput.addEventListener('input', updateStrength);
+
+  function togglePassword() {
+    const icon = document.querySelector('.toggle-eye');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      passwordInput.type = 'password';
+      icon.textContent = 'visibility';
     }
+  }
 
-    passwordInput.addEventListener('input', updateStrength);
+  function updateStrength() {
+    const val = passwordInput.value;
 
-    function updateStrength() {
-      const val = passwordInput.value;
-      let score = 0;
+    checkCriteria('length', val.length >= 8);
+    checkCriteria('uppercase', /[A-Z]/.test(val));
+    checkCriteria('lowercase', /[a-z]/.test(val));
+    checkCriteria('number', /[0-9]/.test(val));
+    checkCriteria('special', /[^A-Za-z0-9]/.test(val));
 
-      checkCriteria('length', val.length >= 8);
-      checkCriteria('uppercase', /[A-Z]/.test(val));
-      checkCriteria('lowercase', /[a-z]/.test(val));
-      checkCriteria('number', /[0-9]/.test(val));
-      checkCriteria('special', /[^A-Za-z0-9]/.test(val));
+    const score = ['length','uppercase','lowercase','number','special'].reduce((acc,id)=>{
+      return acc + (document.getElementById(id).classList.contains('valid') ? 1 : 0);
+    },0);
 
-      score = ['length','uppercase','lowercase','number','special'].reduce((acc,id) => {
-        return acc + (document.getElementById(id).classList.contains('valid') ? 1 : 0);
-      }, 0);
+    strengthBar.style.width = (score*20)+'%';
+    strengthBar.style.background = score<3 ? '#e74c3c' : score<5 ? '#f1c40f' : '#2ecc71';
 
-      strengthBar.style.width = (score * 20) + '%';
-      strengthBar.style.background = score < 3 ? '#e74c3c' : score < 5 ? '#f1c40f' : '#2ecc71';
+    // Entropy
+    let pool=0;
+    if(/[a-z]/.test(val)) pool+=26;
+    if(/[A-Z]/.test(val)) pool+=26;
+    if(/[0-9]/.test(val)) pool+=10;
+    if(/[^A-Za-z0-9]/.test(val)) pool+=32;
+    let entropy = val.length>0 ? Math.log2(Math.pow(pool,val.length)) : 0;
+    document.getElementById('entropy').innerText=`Entropy: ${entropy.toFixed(2)} bits`;
 
-      // Entropy calculation
-      let pool = 0;
-      if (/[a-z]/.test(val)) pool += 26;
-      if (/[A-Z]/.test(val)) pool += 26;
-      if (/[0-9]/.test(val)) pool += 10;
-      if (/[^A-Za-z0-9]/.test(val)) pool += 32;
-      let entropy = val.length > 0 ? Math.log2(Math.pow(pool, val.length)) : 0;
-      entropyEl.innerText = `Entropy: ${entropy.toFixed(2)} bits`;
+    // Crack time
+    let guesses = Math.pow(2,entropy);
+    let crackTime;
+    if(guesses<1e6) crackTime='Instant';
+    else if(guesses<1e12) crackTime='Minutes';
+    else if(guesses<1e18) crackTime='Years';
+    else crackTime='Centuries';
+    document.getElementById('crack-time').innerText=`Crack time: ${crackTime}`;
+  }
 
-      // Crack time
-      let guesses = Math.pow(2, entropy);
-      let crackTime;
-      if (guesses < 1e6) crackTime = 'Instant';
-      else if (guesses < 1e12) crackTime = 'Minutes';
-      else if (guesses < 1e18) crackTime = 'Years';
-      else crackTime = 'Centuries';
-      crackTimeEl.innerText = `Crack time: ${crackTime}`;
+  function checkCriteria(id, valid) {
+    const el = document.getElementById(id);
+    el.className = valid ? 'valid' : 'invalid';
+    el.querySelector('.icon').textContent = valid ? 'check' : 'close';
+  }
+
+  function generatePassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    let pass='';
+    for(let i=0;i<16;i++){
+      pass+=chars.charAt(Math.floor(Math.random()*chars.length));
     }
+    passwordInput.value=pass;
+    updateStrength();
+  }
 
-    function checkCriteria(id, valid) {
-      const el = document.getElementById(id);
-      el.className = valid ? 'valid' : 'invalid';
-      el.innerText = (valid ? '✔️ ' : '❌ ') + el.innerText.slice(2);
-    }
+  function copyPassword() {
+    passwordInput.select();
+    document.execCommand('copy');
+    alert('Password copied!');
+  }
+</script>
 
-    function generatePassword() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
-      let pass = '';
-      for (let i = 0; i < 16; i++) {
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      passwordInput.value = pass;
-      updateStrength();
-    }
-
-    function copyPassword() {
-      passwordInput.select();
-      document.execCommand('copy');
-      alert('Password copied!');
-    }
-  </script>
 </body>
 </html>
