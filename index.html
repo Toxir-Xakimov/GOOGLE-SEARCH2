@@ -7,8 +7,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #2b0057; /* Dark violet background */
-      color: #333;
+      background-color: #2b0057; /* Dark violet */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,91 +16,85 @@
 
     .container {
       background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       width: 400px;
       max-width: 90%;
     }
 
     h1 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
       text-align: center;
-      color: #00ffff; /* cyan accent */
+      color: #00cccc; /* Cyan accent */
     }
 
     .input-group {
       position: relative;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     input[type="password"],
     input[type="text"] {
       width: 100%;
-      padding: 12px 40px 12px 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+      padding: 10px 35px 10px 10px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      font-size: 0.95rem;
     }
 
     .toggle-eye {
       position: absolute;
-      right: 10px;
+      right: 8px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 1.2rem;
-      color: #00baba; /* cyan detail */
+      font-size: 1rem;
+      color: #00cccc;
     }
 
     .strength-bar {
-      height: 8px;
-      border-radius: 4px;
+      height: 6px;
       background: #eee;
       margin: 10px 0;
-      overflow: hidden;
     }
 
     .strength-fill {
       height: 100%;
       width: 0%;
-      background: #00ffff; /* cyan fill */
-      transition: width 0.3s;
+      background: #00cccc;
+      transition: width 0.2s;
     }
 
     ul.criteria {
       list-style: none;
       padding: 0;
-      font-size: 0.9rem;
-    }
-
-    ul.criteria li {
-      margin-bottom: 6px;
-      color: #666;
+      margin: 10px 0;
+      font-size: 0.85rem;
+      color: #555;
     }
 
     ul.criteria li.valid {
-      color: #00baba; /* cyan valid */
+      color: #00cccc;
       font-weight: bold;
     }
 
     .stats {
-      margin: 15px 0;
-      font-size: 0.9rem;
-      color: #444;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      color: #333;
     }
 
     .btn {
-      display: inline-block;
-      padding: 10px 16px;
-      background: #00baba;
+      width: 100%;
+      padding: 10px;
+      background: #00cccc;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background 0.2s;
-      font-size: 1rem;
+      margin-top: 10px;
     }
 
     .btn:hover {
@@ -145,18 +138,13 @@
     passwordInput.addEventListener('input', updateStrength);
 
     function togglePassword() {
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-      } else {
-        passwordInput.type = "password";
-      }
+      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
     }
 
     function updateStrength() {
       const val = passwordInput.value;
       let score = 0;
 
-      // criteria checks
       if (val.length >= 8) { score++; document.getElementById("length").classList.add("valid"); }
       else document.getElementById("length").classList.remove("valid");
 
@@ -172,10 +160,8 @@
       if (/[^A-Za-z0-9]/.test(val)) { score++; document.getElementById("special").classList.add("valid"); }
       else document.getElementById("special").classList.remove("valid");
 
-      // update bar
       strengthFill.style.width = (score / 5) * 100 + "%";
 
-      // entropy + crack time (simple estimation)
       let pool = 0;
       if (/[a-z]/.test(val)) pool += 26;
       if (/[A-Z]/.test(val)) pool += 26;
