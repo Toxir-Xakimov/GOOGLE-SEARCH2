@@ -1,304 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Password Security Checker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Strength Checker</title>
   <style>
-    :root{
-      --bg:#f7f7f8;         /* light grey */
-      --panel:#ffffff;      /* white */
-      --ink:#2b2f33;        /* dark grey text */
-      --muted:#7a7f85;      /* mid grey */
-      --line:#e5e7ea;       /* borders */
-      --ok:#2b2f33;         /* we keep greyscale; strength via width + tone */
-      --focus:#2b2f33;      /* focus ring in dark grey */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #2c3e50; /* Bold dark blue background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
-      color:var(--ink); background:var(--bg); display:grid; place-items:center; padding:24px;
+    .container {
+      background-color: #ffffff; /* White box */
+      padding: 20px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    .card{
-      width:min(720px, 100%);
-      background:var(--panel); border:1px solid var(--line); border-radius:16px;
-      box-shadow:0 8px 24px rgba(0,0,0,.06);
-      padding:24px 20px; display:grid; gap:20px;
+    h2 {
+      text-align: center;
+      color: #333;
     }
-    header{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    h1{font-size:20px; margin:0; letter-spacing:.2px}
-    .sub{color:var(--muted); font-size:13px}
-
-    /* input */
-    .field{display:grid; gap:8px}
-    .label{font-size:12px; letter-spacing:.06em; color:var(--muted); text-transform:uppercase}
-    .input-wrap{position:relative}
-    input[type="password"], input[type="text"]{
-      width:100%;
-      border:1px solid var(--line); border-radius:12px; background:#fff;
-      font-size:16px; padding:14px 44px 14px 14px; color:var(--ink);
-      outline:none; transition:border-color .2s, box-shadow .2s;
+    .input-group {
+      position: relative;
+      margin: 15px 0;
     }
-    input:focus{border-color:var(--focus); box-shadow:0 0 0 4px rgba(0,0,0,.06)}
-    .icon-btn{
-      position:absolute; right:10px; top:50%; transform:translateY(-50%);
-      display:grid; place-items:center; width:28px; height:28px; border-radius:8px;
-      background:#f3f4f6; border:1px solid var(--line); cursor:pointer; user-select:none;
-      font-size:16px; color:var(--ink);
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      padding-right: 40px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
     }
-    .icon-btn:active{transform:translateY(-50%) scale(.98)}
-    .tiny-btn{font-size:12px; padding:6px 10px; border:1px solid var(--line); background:#f8f9fa; border-radius:8px; cursor:pointer}
-
-    /* strength */
-    .meter{height:10px; width:100%; background:#eceff1; border:1px solid var(--line); border-radius:999px; overflow:hidden}
-    .bar{height:100%; width:0%; background:#6b7280; transition:width .35s ease}
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size:12px; color:var(--muted)}
-
-    /* criteria */
-    .criteria{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px}
-    .crit{display:flex; align-items:center; gap:8px; font-size:14px; color:var(--ink)}
-    .dot{width:10px; height:10px; border:1px solid var(--line); border-radius:50%; background:#f0f2f4}
-    .dot.ok{background:#cfd4da}
-
-    /* generator */
-    .gen{display:grid; gap:10px; border-top:1px dashed var(--line); padding-top:16px}
-    .controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-    .range{display:flex; align-items:center; gap:8px}
-    input[type="range"]{accent-color:#6b7280}
-    .switch{display:flex; align-items:center; gap:6px; font-size:14px}
-    .gen-out{display:flex; gap:8px}
-    .gen-out input{flex:1}
-
-    footer{display:flex; justify-content:flex-end}
-    .note{font-size:12px; color:var(--muted)}
-    .hidden{display:none}
+    .toggle-eye {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 16px;
+      color: #555;
+    }
+    .strength {
+      height: 8px;
+      border-radius: 4px;
+      margin: 10px 0;
+      background: #ddd;
+      overflow: hidden;
+    }
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .criteria {
+      font-size: 12px;
+      color: #444;
+      margin-top: 10px;
+    }
+    .criteria span {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .criteria .valid {
+      color: green;
+    }
+    .criteria .invalid {
+      color: red;
+    }
+    .entropy, .crack-time {
+      font-size: 12px;
+      margin-top: 8px;
+      color: #555;
+    }
+    .generator {
+      margin-top: 15px;
+      text-align: center;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #34495e;
+      color: #fff;
+      margin: 5px;
+    }
+    button:hover {
+      background: #2c3e50;
+    }
   </style>
 </head>
 <body>
-  <main class="card" aria-labelledby="title">
-    <header>
-      <div>
-        <h1 id="title">Password Security Checker</h1>
-        <div class="sub">Greyscale, professional UI • Client‑side only</div>
-      </div>
-      <button class="tiny-btn" id="copyCurrent" type="button" aria-label="Copy password">Copy</button>
-    </header>
-
-    <!-- Password input + eye toggle -->
-    <section class="field" aria-label="Password input">
-      <label class="label" for="password">Password</label>
-      <div class="input-wrap">
-        <input id="password" type="password" placeholder="Enter password" autocomplete="off" spellcheck="false" aria-describedby="strengthLabel entropyLabel" />
-        <button class="icon-btn" id="toggleEye" type="button" aria-label="Show password" title="Show/Hide">👁</button>
-      </div>
-    </section>
-
-    <!-- Strength meter -->
-    <section class="field" aria-label="Strength">
-      <div class="row">
-        <div class="label" id="strengthLabel">Strength</div>
-        <div class="mono" id="strengthText">—</div>
-      </div>
-      <div class="meter" aria-hidden="true"><div class="bar" id="bar"></div></div>
-      <div class="row">
-        <div class="mono" id="entropyLabel">Entropy: — bits (rough)</div>
-        <div class="mono" id="crackLabel">Crack time: —</div>
-      </div>
-    </section>
-
-    <!-- Criteria checklist -->
-    <section class="field" aria-label="Criteria">
-      <div class="label">Recommended criteria</div>
-      <div class="criteria">
-        <div class="crit"><span class="dot" id="cLen"></span><span>≥ 12 characters</span></div>
-        <div class="crit"><span class="dot" id="cLower"></span><span>Lowercase letters</span></div>
-        <div class="crit"><span class="dot" id="cUpper"></span><span>Uppercase letters</span></div>
-        <div class="crit"><span class="dot" id="cDigit"></span><span>Digits</span></div>
-        <div class="crit"><span class="dot" id="cSymbol"></span><span>Symbols</span></div>
-        <div class="crit"><span class="dot" id="cNoCommon"></span><span>No common patterns</span></div>
-      </div>
-    </section>
-
-    <!-- Generator -->
-    <section class="gen" aria-label="Generator">
-      <div class="row"><div class="label">Generate a strong password</div></div>
-      <div class="controls">
-        <div class="range">
-          <label class="mono" for="len">Length</label>
-          <input id="len" type="range" min="8" max="32" value="16" />
-          <span class="mono" id="lenVal">16</span>
-        </div>
-        <label class="switch"><input type="checkbox" id="gLower" checked/> lower</label>
-        <label class="switch"><input type="checkbox" id="gUpper" checked/> upper</label>
-        <label class="switch"><input type="checkbox" id="gDigit" checked/> digits</label>
-        <label class="switch"><input type="checkbox" id="gSymbol" checked/> symbols</label>
-        <button class="tiny-btn" id="genBtn" type="button">Generate</button>
-      </div>
-      <div class="gen-out">
-        <input id="genOut" type="text" readonly placeholder="Generated password" />
-        <button class="tiny-btn" id="copyGen" type="button">Copy</button>
-        <button class="tiny-btn" id="useGen" type="button" title="Use as current">Use</button>
-      </div>
-      <div class="note">Entropy & crack time are rough estimates only.</div>
-    </section>
-
-    <footer>
-      <div class="note">All checks run locally in your browser.</div>
-    </footer>
-  </main>
+  <div class="container">
+    <h2>Password Checker</h2>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+    </div>
+    <div class="strength">
+      <div class="strength-bar" id="strength-bar"></div>
+    </div>
+    <div class="criteria">
+      <span id="length" class="invalid">❌ At least 8 characters</span>
+      <span id="uppercase" class="invalid">❌ Uppercase letter</span>
+      <span id="lowercase" class="invalid">❌ Lowercase letter</span>
+      <span id="number" class="invalid">❌ Number</span>
+      <span id="special" class="invalid">❌ Special character</span>
+    </div>
+    <div class="entropy" id="entropy">Entropy: 0 bits</div>
+    <div class="crack-time" id="crack-time">Crack time: Instant</div>
+    <div class="generator">
+      <button onclick="generatePassword()">Generate Strong Password</button>
+      <button onclick="copyPassword()">Copy</button>
+    </div>
+  </div>
 
   <script>
-    const $ = (id)=>document.getElementById(id);
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('strength-bar');
+    const entropyEl = document.getElementById('entropy');
+    const crackTimeEl = document.getElementById('crack-time');
 
-    const password = $("password");
-    const bar = $("bar");
-    const strengthText = $("strengthText");
-    const entropyLabel = $("entropyLabel");
-    const crackLabel = $("crackLabel");
-
-    const dots = {
-      len: $("cLen"), lower: $("cLower"), upper: $("cUpper"), digit: $("cDigit"), symbol: $("cSymbol"), noCommon: $("cNoCommon")
-    };
-
-    const toggleEye = $("toggleEye");
-    toggleEye.addEventListener('click', ()=>{
-      const isPass = password.type === 'password';
-      password.type = isPass ? 'text' : 'password';
-      toggleEye.textContent = isPass ? '🙈' : '👁';
-      toggleEye.setAttribute('aria-label', isPass ? 'Hide password' : 'Show password');
-    });
-
-    $("copyCurrent").addEventListener('click', ()=>{
-      navigator.clipboard.writeText(password.value || '').then(()=>{
-        flashButton($("copyCurrent"));
-      });
-    });
-
-    // Generator
-    const pools = {
-      lower: 'abcdefghijklmnopqrstuvwxyz',
-      upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-      digit: '0123456789',
-      symbol: '!@#$%^&*()_+-=[]{};:,./?~'
-    };
-
-    const len = $("len"), lenVal = $("lenVal");
-    const gLower=$("gLower"), gUpper=$("gUpper"), gDigit=$("gDigit"), gSymbol=$("gSymbol");
-    const genBtn=$("genBtn"), genOut=$("genOut"), copyGen=$("copyGen"), useGen=$("useGen");
-
-    len.addEventListener('input', ()=> lenVal.textContent = len.value);
-
-    genBtn.addEventListener('click', ()=>{
-      const length = +len.value;
-      const selected = [gLower.checked && pools.lower, gUpper.checked && pools.upper, gDigit.checked && pools.digit, gSymbol.checked && pools.symbol].filter(Boolean);
-      if(selected.length===0){
-        genOut.value='Select at least one set'; return;
+    function togglePassword() {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+      } else {
+        passwordInput.type = 'password';
       }
-      // Ensure at least one char from each selected pool
-      let result = selected.map(set => set[Math.floor(cryptoRand(set.length))]).join('');
-      const all = selected.join('');
-      for(let i=result.length; i<length; i++) result += all[Math.floor(cryptoRand(all.length))];
-      // Shuffle
-      result = shuffle(result);
-      genOut.value = result;
-    });
-
-    copyGen.addEventListener('click', ()=>{
-      navigator.clipboard.writeText(genOut.value || '').then(()=> flashButton(copyGen));
-    });
-
-    useGen.addEventListener('click', ()=>{
-      if(!genOut.value) return; password.value = genOut.value; triggerAnalyze();
-    });
-
-    function cryptoRand(max){
-      // cryptographically stronger 0..max-1
-      const buf = new Uint32Array(1);
-      window.crypto.getRandomValues(buf);
-      return (buf[0]/(0xFFFFFFFF+1)) * max;
     }
 
-    function shuffle(str){
-      const a = str.split('');
-      for(let i=a.length-1;i>0;i--){
-        const j = Math.floor(cryptoRand(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-      }
-      return a.join('');
-    }
+    passwordInput.addEventListener('input', updateStrength);
 
-    // Analysis
-    password.addEventListener('input', triggerAnalyze);
-    triggerAnalyze();
-
-    function triggerAnalyze(){
-      const p = password.value || '';
-      const analysis = analyze(p);
-      // progress width (0..100)
-      bar.style.width = analysis.score*25 + '%';
-      strengthText.textContent = analysis.label;
-      entropyLabel.textContent = `Entropy: ${analysis.entropy.toFixed(1)} bits (rough)`;
-      crackLabel.textContent = `Crack time: ${analysis.crack}`;
-      // dots
-      setDot(dots.len, analysis.lenOK);
-      setDot(dots.lower, analysis.hasLower);
-      setDot(dots.upper, analysis.hasUpper);
-      setDot(dots.digit, analysis.hasDigit);
-      setDot(dots.symbol, analysis.hasSymbol);
-      setDot(dots.noCommon, !analysis.common);
-    }
-
-    function setDot(el, ok){ el.classList.toggle('ok', !!ok); }
-
-    function analyze(p){
-      const hasLower = /[a-z]/.test(p);
-      const hasUpper = /[A-Z]/.test(p);
-      const hasDigit = /\d/.test(p);
-      const hasSymbol = /[^A-Za-z0-9]/.test(p);
-      const lenOK = p.length >= 12;
-
-      // Very light common pattern detection (greyscale tool; not exhaustive)
-      const lowerP = p.toLowerCase();
-      const commonList = ['password','qwerty','letmein','admin','welcome','iloveyou','abc123'];
-      const common = commonList.some(w => lowerP.includes(w));
-
-      // Score 0..4
+    function updateStrength() {
+      const val = passwordInput.value;
       let score = 0;
-      if(p.length>0) score = 1;
-      if(lenOK && (hasLower+hasUpper+hasDigit+hasSymbol)>=2) score = 2;
-      if(lenOK && (hasLower+hasUpper+hasDigit+hasSymbol)>=3) score = 3;
-      if(p.length>=16 && hasLower && hasUpper && hasDigit && hasSymbol && !common) score = 4;
+      let charset = 0;
 
-      const label = ['—','Weak','Fair','Strong','Very strong'][score];
+      if (val.length >= 8) { score++; document.getElementById('length').className = 'valid'; document.getElementById('length').innerText = '✔️ At least 8 characters'; } else { document.getElementById('length').className = 'invalid'; document.getElementById('length').innerText = '❌ At least 8 characters'; }
+      if (/[A-Z]/.test(val)) { score++; document.getElementById('uppercase').className = 'valid'; document.getElementById('uppercase').innerText = '✔️ Uppercase letter'; } else { document.getElementById('uppercase').className = 'invalid'; document.getElementById('uppercase').innerText = '❌ Uppercase letter'; }
+      if (/[a-z]/.test(val)) { score++; document.getElementById('lowercase').className = 'valid'; document.getElementById('lowercase').innerText = '✔️ Lowercase letter'; } else { document.getElementById('lowercase').className = 'invalid'; document.getElementById('lowercase').innerText = '❌ Lowercase letter'; }
+      if (/[0-9]/.test(val)) { score++; document.getElementById('number').className = 'valid'; document.getElementById('number').innerText = '✔️ Number'; } else { document.getElementById('number').className = 'invalid'; document.getElementById('number').innerText = '❌ Number'; }
+      if (/[^A-Za-z0-9]/.test(val)) { score++; document.getElementById('special').className = 'valid'; document.getElementById('special').innerText = '✔️ Special character'; } else { document.getElementById('special').className = 'invalid'; document.getElementById('special').innerText = '❌ Special character'; }
 
-      // Entropy estimate: based on available character set size
-      let N = 0; if(hasLower) N+=26; if(hasUpper) N+=26; if(hasDigit) N+=10; if(hasSymbol) N+=32;
-      if(N===0) N = 1; // avoid log of 0
-      const entropy = p.length * Math.log2(N);
+      strengthBar.style.width = (score * 20) + '%';
+      strengthBar.style.background = score < 3 ? 'red' : score < 4 ? 'orange' : 'green';
 
-      // Crack time (very rough): assuming 10^10 guesses/sec offline. This is illustrative only.
-      const guesses = Math.pow(N, p.length);
-      const seconds = Math.min(guesses / 1e10, Number.MAX_SAFE_INTEGER);
-      const crack = humanTime(seconds);
+      let pool = 0;
+      if (/[a-z]/.test(val)) pool += 26;
+      if (/[A-Z]/.test(val)) pool += 26;
+      if (/[0-9]/.test(val)) pool += 10;
+      if (/[^A-Za-z0-9]/.test(val)) pool += 32;
 
-      return {hasLower,hasUpper,hasDigit,hasSymbol,lenOK,common,score,label,entropy,crack};
+      let entropy = val.length > 0 ? Math.log2(Math.pow(pool, val.length)) : 0;
+      entropyEl.innerText = `Entropy: ${entropy.toFixed(2)} bits`;
+
+      let guesses = Math.pow(2, entropy);
+      let crackTime;
+      if (guesses < 1e6) crackTime = 'Instant';
+      else if (guesses < 1e12) crackTime = 'Minutes';
+      else if (guesses < 1e18) crackTime = 'Years';
+      else crackTime = 'Centuries';
+      crackTimeEl.innerText = `Crack time: ${crackTime}`;
     }
 
-    function humanTime(s){
-      if(!isFinite(s) || s>1e20) return '> many millennia';
-      const units = [
-        ['sec',60], ['min',60], ['hr',24], ['day',30], ['mo',12], ['yr',100], ['century',10]
-      ];
-      let n = s; let i=0; while(i<units.length && n>=units[i][1]){ n/=units[i][1]; i++; }
-      const name = units[i]?units[i][0]:'yr';
-      return `${n.toFixed(1)} ${name}`;
+    function generatePassword() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+      let pass = '';
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      passwordInput.value = pass;
+      updateStrength();
     }
 
-    function flashButton(btn){
-      const old = btn.textContent; btn.textContent='Copied';
-      setTimeout(()=> btn.textContent=old, 900);
+    function copyPassword() {
+      passwordInput.select();
+      document.execCommand('copy');
+      alert('Password copied!');
     }
   </script>
 </body>
