@@ -3,243 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="mlnRRChoD23t52pHPcZ1NgXkru0mAZ2-zF39CupCi-c" />
   <title>Password Strength Checker</title>
-  
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: #333;
     }
-
-    .container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      width: 360px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    }
-
-    h2 {
+    .box {
+      background: #2d2d44;
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
-      font-size: 22px;
-      margin-bottom: 20px;
+      width: 300px;
     }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 15px;
-      width: 100%;
-    }
-
     input {
       width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      padding-right: 40px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    input:focus {
-      border-color: #007BFF;
-    }
-
-    .toggle-eye {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 20px;
-      color: #555;
-    }
-
-    .strength {
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .strength-bar {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s, background 0.3s;
-    }
-
-    .criteria {
-      font-size: 13px;
-      margin-top: 8px;
-    }
-
-    .criteria span {
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .criteria .icon {
-      font-size: 16px;
-      margin-right: 6px;
-    }
-
-    .valid .icon {
-      color: #2ecc71;
-    }
-
-    .invalid .icon {
-      color: #e74c3c;
-    }
-
-    .entropy, .crack-time {
-      font-size: 12px;
-      color: #555;
-      margin-top: 6px;
-    }
-
-    .generator {
-      margin-top: 15px;
-      text-align: center;
-    }
-
-    button {
-      padding: 8px 14px;
+      padding: 10px;
+      border-radius: 8px;
       border: none;
-      border-radius: 6px;
-      background: #007BFF;
-      color: #fff;
-      margin: 5px 3px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.3s, transform 0.2s;
+      margin-bottom: 15px;
     }
-
-    button:hover {
-      background: #0056b3;
-      transform: translateY(-1px);
+    .strength {
+      font-weight: bold;
+      margin-top: 10px;
     }
+    .weak { color: red; }
+    .medium { color: orange; }
+    .strong { color: limegreen; }
   </style>
 </head>
 <body>
-
-<div class="container">
-  <h2>Password Checker</h2>
-
-  <div class="input-group">
-    <input type="password" id="password" placeholder="Enter your password">
-    <span class="toggle-eye material-icons" onclick="togglePassword()">visibility</span>
+  <div class="box">
+    <h2>Password Strength Checker</h2>
+    <input type="password" id="password" placeholder="Enter password">
+    <div class="strength" id="strength">Strength: </div>
   </div>
 
-  <div class="strength">
-    <div class="strength-bar" id="strength-bar"></div>
-  </div>
+  <script>
+    const passwordInput = document.getElementById("password");
+    const strengthText = document.getElementById("strength");
 
-  <div class="criteria">
-    <span id="length" class="invalid"><span class="material-icons icon">close</span>At least 8 characters</span>
-    <span id="uppercase" class="invalid"><span class="material-icons icon">close</span>Uppercase letter</span>
-    <span id="lowercase" class="invalid"><span class="material-icons icon">close</span>Lowercase letter</span>
-    <span id="number" class="invalid"><span class="material-icons icon">close</span>Number</span>
-    <span id="special" class="invalid"><span class="material-icons icon">close</span>Special character</span>
-  </div>
+    const commonPasswords = ["123456", "password", "qwerty", "abc123", "111111"];
 
-  <div class="entropy" id="entropy">Entropy: 0 bits</div>
-  <div class="crack-time" id="crack-time">Crack time: Instant</div>
+    passwordInput.addEventListener("input", () => {
+      const pass = passwordInput.value;
+      let score = 0;
 
-  <div class="generator">
-    <button onclick="generatePassword()">Generate Password</button>
-    <button onclick="copyPassword()">Copy</button>
-  </div>
-</div>
+      // Common password check
+      if (commonPasswords.includes(pass.toLowerCase())) {
+        strengthText.textContent = "Strength: Weak (common password)";
+        strengthText.className = "strength weak";
+        return;
+      }
 
-<script>
-  const passwordInput = document.getElementById('password');
-  const strengthBar = document.getElementById('strength-bar');
+      // Length check
+      if (pass.length > 6) score++;
+      if (pass.length > 10) score++;
 
-  passwordInput.addEventListener('input', updateStrength);
+      // Character variety
+      if (/[a-z]/.test(pass)) score++;
+      if (/[A-Z]/.test(pass)) score++;
+      if (/[0-9]/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass)) score++;
 
-  function togglePassword() {
-    const icon = document.querySelector('.toggle-eye');
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      icon.textContent = 'visibility_off';
-    } else {
-      passwordInput.type = 'password';
-      icon.textContent = 'visibility';
-    }
-  }
-
-  function updateStrength() {
-    const val = passwordInput.value;
-
-    checkCriteria('length', val.length >= 8);
-    checkCriteria('uppercase', /[A-Z]/.test(val));
-    checkCriteria('lowercase', /[a-z]/.test(val));
-    checkCriteria('number', /[0-9]/.test(val));
-    checkCriteria('special', /[^A-Za-z0-9]/.test(val));
-
-    const score = ['length','uppercase','lowercase','number','special'].reduce((acc,id)=>{
-      return acc + (document.getElementById(id).classList.contains('valid') ? 1 : 0);
-    },0);
-
-    strengthBar.style.width = (score*20)+'%';
-    strengthBar.style.background = score<3 ? '#e74c3c' : score<5 ? '#f1c40f' : '#2ecc71';
-
-    // Entropy
-    let pool=0;
-    if(/[a-z]/.test(val)) pool+=26;
-    if(/[A-Z]/.test(val)) pool+=26;
-    if(/[0-9]/.test(val)) pool+=10;
-    if(/[^A-Za-z0-9]/.test(val)) pool+=32;
-    let entropy = val.length>0 ? Math.log2(Math.pow(pool,val.length)) : 0;
-    document.getElementById('entropy').innerText=`Entropy: ${entropy.toFixed(2)} bits`;
-
-    // Crack time
-    let guesses = Math.pow(2,entropy);
-    let crackTime;
-    if(guesses<1e6) crackTime='Instant';
-    else if(guesses<1e12) crackTime='Minutes';
-    else if(guesses<1e18) crackTime='Years';
-    else crackTime='Centuries';
-    document.getElementById('crack-time').innerText=`Crack time: ${crackTime}`;
-  }
-
-  function checkCriteria(id, valid) {
-    const el = document.getElementById(id);
-    el.className = valid ? 'valid' : 'invalid';
-    el.querySelector('.icon').textContent = valid ? 'check' : 'close';
-  }
-
-  function generatePassword() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
-    let pass='';
-    for(let i=0;i<16;i++){
-      pass+=chars.charAt(Math.floor(Math.random()*chars.length));
-    }
-    passwordInput.value=pass;
-    updateStrength();
-  }
-
-  function copyPassword() {
-    passwordInput.select();
-    document.execCommand('copy');
-    alert('Password copied!');
-  }
-</script>
-
+      // Strength levels
+      if (score <= 2) {
+        strengthText.textContent = "Strength: Weak";
+        strengthText.className = "strength weak";
+      } else if (score <= 4) {
+        strengthText.textContent = "Strength: Medium";
+        strengthText.className = "strength medium";
+      } else {
+        strengthText.textContent = "Strength: Strong";
+        strengthText.className = "strength strong";
+      }
+    });
+  </script>
 </body>
 </html>
-
