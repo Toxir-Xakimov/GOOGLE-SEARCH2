@@ -138,13 +138,22 @@
     }
 
     /* Suggestion box integrated (only shows when weak) */
-    .suggestion-box {
-      margin-top: 16px;
-      padding: 14px;
-      background: #1a2140;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-    }
+    /* Suggest box hidden by default */
+.suggest-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #0f3460;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.suggest-box.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
     .suggestion-box h3{
       margin: 0 0 10px 0; font-size: 15px; color: var(--text); font-weight: 600;
     }
@@ -385,33 +394,20 @@
     }
 
     // Suggestions (lives INSIDE the suggest box — no separate external button)
-    function renderSuggestions(n){
-      suggestionsWrap.innerHTML = '';
-      for (let i = 0; i < n; i++){
-        const s = generateStrongPassword(18);
-        const row = document.createElement('div');
-        row.className = 'suggestion-row';
+    function showSuggestions(password) {
+  const box = document.getElementById("suggestBox");
+  const output = document.getElementById("suggestOutput");
 
-        const inp = document.createElement('input');
-        inp.type = 'text';
-        inp.className = 'suggestion-input';
-        inp.value = s;
-        inp.readOnly = true;
+  // Generate one strong suggestion
+  const strongPass = generateStrongPassword();
 
-        const copy = document.createElement('button');
-        copy.className = 'copy-btn';
-        copy.innerHTML = '<span class="material-icons">content_copy</span>';
-        copy.addEventListener('click', () => {
-          navigator.clipboard.writeText(inp.value);
-          copy.innerHTML = '<span class="material-icons">check</span>';
-          setTimeout(()=> copy.innerHTML = '<span class="material-icons">content_copy</span>', 1200);
-        });
+  output.innerHTML = `<p>⚠️ Your password is weak. Try this strong one:</p>
+                      <p><b>${strongPass}</b></p>`;
 
-        row.appendChild(inp);
-        row.appendChild(copy);
-        suggestionsWrap.appendChild(row);
-      }
-    }
+  // Smooth show
+  box.classList.add("show");
+}
+
 
     function generateStrongPassword(len=18){
       const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -438,3 +434,4 @@
   </script>
 </body>
 </html>
+
