@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #0b0f1a;
-      color: white;
+      background-color: #0b0e1a;
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,133 +17,148 @@
     }
 
     .container {
-      background-color: #161b2e;
-      padding: 30px;
-      border-radius: 15px;
-      width: 100%;
-      max-width: 400px;
+      background: #141827;
+      padding: 40px;
+      border-radius: 12px;
+      width: 380px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 22px;
+      font-weight: bold;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-
-    form input {
-      width: 80%;
-      max-width: 300px;
-      padding: 10px;
+    input {
+      width: 90%;
+      padding: 12px;
+      margin: 12px 0;
       border: none;
-      border-radius: 8px;
-      background: #1e2235;
-      color: white;
-      font-size: 16px;
-      text-align: center;
-    }
-
-    .password-input {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 80%;
-      max-width: 300px;
-      background: #1e2235;
-      border-radius: 8px;
-    }
-
-    .password-input input {
-      flex: 1;
-      border: none;
+      border-radius: 6px;
+      background: #1f2435;
+      color: #fff;
+      font-size: 15px;
+      text-align: left; /* keep input text aligned left */
       outline: none;
-      background: transparent;
-      color: white;
-      padding: 10px;
-      font-size: 16px;
-      text-align: center;
+      transition: all 0.2s ease;
     }
 
-    .password-input button {
-      background: none;
-      border: none;
-      color: #aaa;
+    input:focus {
+      border: 1px solid #3a82f7;
+      background: #242b3e;
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 90%;
+      margin: 12px auto;
+    }
+
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
       cursor: pointer;
-      padding: 10px;
+      font-size: 18px;
+      color: #aaa;
+      transition: color 0.2s;
     }
 
-    .progress-bar {
+    .toggle-password:hover {
+      color: #fff;
+    }
+
+    .strength-bar {
       height: 6px;
-      border-radius: 5px;
-      margin: 10px 0;
       background: #333;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .strength {
+      height: 100%;
+      width: 0%;
+      background: red;
+      border-radius: 4px;
+      transition: width 0.4s ease, background 0.4s ease;
     }
 
     .criteria {
       text-align: left;
-      font-size: 14px;
-      margin-top: 10px;
+      margin-top: 18px;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
     .criteria span {
       display: block;
-      margin: 4px 0;
-      color: red;
+      color: #ff4d4d;
     }
 
-    .criteria .valid {
-      color: lime;
+    .criteria span.valid {
+      color: #2ecc71;
     }
 
+    /* Suggestion box (appears smoothly) */
     .suggest-box {
-      margin-top: 15px;
+      margin-top: 20px;
       padding: 15px;
-      background: #222b45;
-      border-radius: 10px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-
-    .suggest-box.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .suggest-box button {
-      margin-top: 10px;
-      padding: 8px 15px;
-      border: none;
       border-radius: 8px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
+      background: #1f2435;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
 
-    .suggest-box button:hover {
-      background: #0056b3;
+    .suggest-box.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .suggest-box h3 {
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f5f5f5;
+    }
+
+    .suggest-password {
+      background: #242b3e;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #3a82f7;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Password Checker</h2>
-    <form id="infoForm">
-      <input type="text" id="name" placeholder="Enter your name" required>
-      <input type="text" id="year" placeholder="Enter birth year" required>
-      <div class="password-input">
-        <input type="password" id="password" placeholder="Enter your password" required>
-        <button type="button" id="togglePassword">👁</button>
-      </div>
-    </form>
+    
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="number" id="birthyear" placeholder="Enter your birth year" min="1900" max="2099">
 
-    <div class="progress-bar" id="progress"></div>
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    </div>
+
+    <div class="strength-bar">
+      <div id="strength" class="strength"></div>
+    </div>
+
     <div class="criteria" id="criteria">
       <span id="length">At least 8 characters</span>
       <span id="uppercase">Uppercase letter</span>
@@ -154,120 +169,87 @@
     </div>
 
     <div class="suggest-box" id="suggestBox">
-      <p>Your password is weak. Try this suggestion:</p>
-      <p id="suggestionText"></p>
-      <button id="useSuggestion">Use Suggested Password</button>
+      <h3>Suggested Strong Passwords:</h3>
+      <div id="suggestions"></div>
     </div>
   </div>
 
   <script>
-    const nameInput = document.getElementById("name");
-    const yearInput = document.getElementById("year");
     const passwordInput = document.getElementById("password");
-    const togglePassword = document.getElementById("togglePassword");
-    const progress = document.getElementById("progress");
-    const criteria = {
-      length: document.getElementById("length"),
-      uppercase: document.getElementById("uppercase"),
-      lowercase: document.getElementById("lowercase"),
-      number: document.getElementById("number"),
-      special: document.getElementById("special"),
-      personal: document.getElementById("personal"),
-    };
+    const strengthBar = document.getElementById("strength");
     const suggestBox = document.getElementById("suggestBox");
-    const suggestionText = document.getElementById("suggestionText");
-    const useSuggestion = document.getElementById("useSuggestion");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const nameInput = document.getElementById("name");
+    const birthInput = document.getElementById("birthyear");
 
-    // Restrict name input to letters only
-    nameInput.addEventListener("input", () => {
-      nameInput.value = nameInput.value.replace(/[^a-zA-Z]/g, "");
-    });
+    const criteriaIds = ["length","uppercase","lowercase","number","special","personal"];
 
-    // Restrict year input to 4 digits between (currentYear - 100) and currentYear
-    const currentYear = new Date().getFullYear();
-    yearInput.addEventListener("input", () => {
-      yearInput.value = yearInput.value.replace(/[^0-9]/g, "");
-      if (yearInput.value.length > 4) {
-        yearInput.value = yearInput.value.slice(0, 4);
-      }
-    });
-
-    // Password show/hide toggle
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.type === "password" ? "text" : "password";
-      passwordInput.type = type;
-    });
-
-    // Password strength checker
-    passwordInput.addEventListener("input", () => {
-      const password = passwordInput.value;
-      const name = nameInput.value.toLowerCase();
-      const year = yearInput.value;
-
-      let strength = 0;
-
-      if (password.length >= 8) {
-        criteria.length.classList.add("valid"); strength++;
-      } else {
-        criteria.length.classList.remove("valid");
-      }
-
-      if (/[A-Z]/.test(password)) {
-        criteria.uppercase.classList.add("valid"); strength++;
-      } else {
-        criteria.uppercase.classList.remove("valid");
-      }
-
-      if (/[a-z]/.test(password)) {
-        criteria.lowercase.classList.add("valid"); strength++;
-      } else {
-        criteria.lowercase.classList.remove("valid");
-      }
-
-      if (/[0-9]/.test(password)) {
-        criteria.number.classList.add("valid"); strength++;
-      } else {
-        criteria.number.classList.remove("valid");
-      }
-
-      if (/[^A-Za-z0-9]/.test(password)) {
-        criteria.special.classList.add("valid"); strength++;
-      } else {
-        criteria.special.classList.remove("valid");
-      }
-
-      if (password.toLowerCase().includes(name) || password.includes(year)) {
-        criteria.personal.classList.remove("valid");
-      } else {
-        criteria.personal.classList.add("valid"); strength++;
-      }
-
-      progress.style.width = (strength / 6) * 100 + "%";
-      progress.style.background = strength >= 5 ? "lime" : strength >= 3 ? "orange" : "red";
-
-      // Show suggest box if weak
-      if (strength < 4) {
-        suggestBox.classList.add("visible");
-        suggestionText.textContent = generatePassword();
-      } else {
-        suggestBox.classList.remove("visible");
-      }
-    });
-
-    // Password generator
-    function generatePassword() {
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-      let pass = "";
-      for (let i = 0; i < 12; i++) {
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return pass;
+    function togglePassword() {
+      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
     }
 
-    // Use suggested password
-    useSuggestion.addEventListener("click", () => {
-      passwordInput.value = suggestionText.textContent;
-      passwordInput.dispatchEvent(new Event("input"));
+    function generateStrongPassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+      let password = "";
+      for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return password;
+    }
+
+    passwordInput.addEventListener("input", () => {
+      const val = passwordInput.value;
+      const name = nameInput.value.toLowerCase();
+      const birth = birthInput.value;
+
+      let score = 0;
+
+      const lengthValid = val.length >= 8;
+      const upperValid = /[A-Z]/.test(val);
+      const lowerValid = /[a-z]/.test(val);
+      const numberValid = /\d/.test(val);
+      const specialValid = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+
+      const personalInvalid = 
+        (name && val.toLowerCase().includes(name)) ||
+        (birth && val.includes(birth));
+
+      document.getElementById("length").classList.toggle("valid", lengthValid);
+      document.getElementById("uppercase").classList.toggle("valid", upperValid);
+      document.getElementById("lowercase").classList.toggle("valid", lowerValid);
+      document.getElementById("number").classList.toggle("valid", numberValid);
+      document.getElementById("special").classList.toggle("valid", specialValid);
+      document.getElementById("personal").classList.toggle("valid", !personalInvalid);
+
+      if (lengthValid) score++;
+      if (upperValid) score++;
+      if (lowerValid) score++;
+      if (numberValid) score++;
+      if (specialValid) score++;
+      if (!personalInvalid) score++;
+
+      const percentage = (score / criteriaIds.length) * 100;
+      strengthBar.style.width = percentage + "%";
+
+      if (percentage < 40) {
+        strengthBar.style.background = "red";
+      } else if (percentage < 70) {
+        strengthBar.style.background = "orange";
+      } else {
+        strengthBar.style.background = "green";
+      }
+
+      // Suggest passwords if weak
+      if (score < 5) {
+        suggestBox.classList.add("show");
+        suggestionsDiv.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          const strongPass = generateStrongPassword();
+          suggestionsDiv.innerHTML += `<div class="suggest-password">${strongPass}</div>`;
+        }
+      } else {
+        suggestBox.classList.remove("show");
+      }
     });
   </script>
 </body>
