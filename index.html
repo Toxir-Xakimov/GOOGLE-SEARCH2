@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Password Checker</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #0d0f24;
-      color: #fff;
+      background-color: #0c0e1a;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,231 +17,216 @@
     }
 
     .container {
-      background: #14172e;
+      background: #14172b;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      width: 350px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      width: 400px;
       text-align: center;
     }
 
     h2 {
       margin-bottom: 20px;
-      color: #fff;
-    }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 15px;
+      font-size: 22px;
     }
 
     input {
       width: 100%;
-      padding: 10px 40px 10px 10px;
-      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
       border: none;
-      outline: none;
-      background: #1e223d;
-      color: #fff;
+      border-radius: 8px;
+      background: #1e213b;
+      color: white;
       font-size: 14px;
+      outline: none;
     }
 
-    .toggle-visibility {
+    input:focus {
+      border: 1px solid #3a80f7;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
       position: absolute;
-      right: 10px;
       top: 50%;
+      right: 12px;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 18px;
-      color: #bbb;
+      color: #aaa;
     }
 
     .strength-bar {
       height: 8px;
+      border-radius: 4px;
+      margin-top: 10px;
       background: #333;
-      border-radius: 5px;
-      margin: 10px 0;
       overflow: hidden;
     }
 
-    .strength-bar-fill {
+    .strength-bar div {
       height: 100%;
       width: 0;
-      background: red;
-      transition: width 0.4s;
+      transition: width 0.5s;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
+    .criteria {
       text-align: left;
-      margin: 15px 0;
-    }
-
-    ul li {
-      margin: 6px 0;
+      margin-top: 15px;
       font-size: 14px;
     }
 
-    ul li.valid {
-      color: #00ffae;
+    .criteria p {
+      margin: 3px 0;
     }
 
-    ul li.invalid {
-      color: #ff5c5c;
+    .valid {
+      color: #00ff6a;
     }
 
-    .suggest-box {
+    .invalid {
+      color: red;
+    }
+
+    /* Fade-in / fade-out suggestion box */
+    .suggestion-box {
       margin-top: 20px;
-      background: #1e223d;
-      padding: 12px;
-      border-radius: 8px;
-      display: none;
+      padding: 15px;
+      background: #1e213b;
+      border-radius: 10px;
       opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s ease;
     }
 
-    .suggest-box.show {
-      display: block;
+    .suggestion-box.active {
       opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
-    button {
+    .suggestion-box strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .btn {
       margin-top: 10px;
-      padding: 10px 15px;
-      background: #2563eb;
-      color: #fff;
+      padding: 10px 18px;
       border: none;
       border-radius: 8px;
+      background: #3a80f7;
+      color: white;
+      font-size: 14px;
       cursor: pointer;
       transition: background 0.3s;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    .btn:hover {
+      background: #2e64c7;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Password Checker</h2>
+    <form id="userForm">
+      <input type="text" id="name" placeholder="Enter your name" pattern="[A-Za-z\s]+" title="Only letters allowed" required />
+      
+      <input type="number" id="birthYear" placeholder="Enter birth year" min="1925" max="2025" 
+        oninput="if(this.value.length > 4) this.value = this.value.slice(0,4);" required />
+      
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Enter password" required />
+        <span class="toggle-password" onclick="togglePassword()">👁</span>
+      </div>
+    </form>
 
-    <!-- Name input -->
-    <div class="input-group">
-      <input type="text" id="name" placeholder="Enter your name">
+    <div class="strength-bar"><div id="strength"></div></div>
+
+    <div class="criteria">
+      <p id="length" class="invalid">At least 8 characters</p>
+      <p id="uppercase" class="invalid">Uppercase letter</p>
+      <p id="lowercase" class="invalid">Lowercase letter</p>
+      <p id="number" class="invalid">Number</p>
+      <p id="special" class="invalid">Special character</p>
+      <p id="personal" class="invalid">No personal info</p>
     </div>
 
-    <!-- Year input -->
-    <div class="input-group">
-      <input type="text" id="year" maxlength="4" placeholder="Enter birth year">
-    </div>
-
-    <!-- Password input -->
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Enter password">
-      <span class="toggle-visibility" id="togglePassword">👁</span>
-    </div>
-
-    <!-- Strength bar -->
-    <div class="strength-bar">
-      <div class="strength-bar-fill" id="strengthFill"></div>
-    </div>
-
-    <!-- Rules -->
-    <ul>
-      <li id="length" class="invalid">At least 8 characters</li>
-      <li id="upper" class="invalid">Uppercase letter</li>
-      <li id="lower" class="invalid">Lowercase letter</li>
-      <li id="number" class="invalid">Number</li>
-      <li id="special" class="invalid">Special character</li>
-      <li id="personal" class="invalid">No personal info</li>
-    </ul>
-
-    <!-- Suggest box -->
-    <div class="suggest-box" id="suggestBox">
+    <div class="suggestion-box" id="suggestionBox">
       <strong>Suggested Strong Passwords:</strong>
-      <div id="suggestions"></div>
-      <button id="generateBtn">Generate New</button>
+      <p id="suggestedPassword"></p>
+      <button class="btn" onclick="generatePassword()">Generate New</button>
     </div>
   </div>
 
   <script>
-    const nameInput = document.getElementById("name");
-    const yearInput = document.getElementById("year");
     const passwordInput = document.getElementById("password");
-    const togglePassword = document.getElementById("togglePassword");
-    const strengthFill = document.getElementById("strengthFill");
-    const suggestBox = document.getElementById("suggestBox");
-    const suggestions = document.getElementById("suggestions");
-    const generateBtn = document.getElementById("generateBtn");
+    const nameInput = document.getElementById("name");
+    const birthYearInput = document.getElementById("birthYear");
+    const strengthBar = document.getElementById("strength");
+    const suggestionBox = document.getElementById("suggestionBox");
+    const suggestedPassword = document.getElementById("suggestedPassword");
 
-    // Prevent numbers in name
-    nameInput.addEventListener("input", (e) => {
-      e.target.value = e.target.value.replace(/[0-9]/g, "");
-    });
+    function togglePassword() {
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+    }
 
-    // Force year to 4 digits only
-    yearInput.addEventListener("input", (e) => {
-      e.target.value = e.target.value.replace(/\D/g, "");
-      if (e.target.value.length > 4) {
-        e.target.value = e.target.value.slice(0, 4);
-      }
-    });
+    passwordInput.addEventListener("input", checkStrength);
 
-    // Toggle password visibility
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-    });
+    function checkStrength() {
+      const value = passwordInput.value;
+      let strength = 0;
 
-    // Check password
-    passwordInput.addEventListener("input", checkPassword);
-    generateBtn.addEventListener("click", generatePassword);
-
-    function checkPassword() {
-      const val = passwordInput.value;
-      const name = nameInput.value.trim().toLowerCase();
-      const year = yearInput.value.trim();
-
-      let score = 0;
-
-      // Rules
-      const rules = {
-        length: val.length >= 8,
-        upper: /[A-Z]/.test(val),
-        lower: /[a-z]/.test(val),
-        number: /[0-9]/.test(val),
-        special: /[^A-Za-z0-9]/.test(val),
-        personal: !(name && val.toLowerCase().includes(name)) && !(year && val.includes(year))
+      const checks = {
+        length: value.length >= 8,
+        uppercase: /[A-Z]/.test(value),
+        lowercase: /[a-z]/.test(value),
+        number: /[0-9]/.test(value),
+        special: /[^A-Za-z0-9]/.test(value),
+        personal: !(
+          value.includes(nameInput.value) ||
+          value.includes(birthYearInput.value)
+        ),
       };
 
-      for (const rule in rules) {
-        document.getElementById(rule).className = rules[rule] ? "valid" : "invalid";
-        if (rules[rule]) score++;
+      for (let key in checks) {
+        const element = document.getElementById(key);
+        if (checks[key]) {
+          element.classList.remove("invalid");
+          element.classList.add("valid");
+          strength++;
+        } else {
+          element.classList.remove("valid");
+          element.classList.add("invalid");
+        }
       }
 
-      // Strength bar
-      const percent = (score / 6) * 100;
-      strengthFill.style.width = percent + "%";
-      strengthFill.style.background = percent < 50 ? "red" : percent < 80 ? "orange" : "limegreen";
+      strengthBar.style.width = (strength / 6) * 100 + "%";
+      strengthBar.style.background = strength < 3 ? "red" : strength < 5 ? "orange" : "green";
 
-      // Suggest box
-      if (score < 6) {
-        suggestBox.classList.add("show");
-        generatePassword();
+      // Suggestion box fade in/out
+      if (strength < 6) {
+        suggestionBox.classList.add("active");
+        suggestedPassword.textContent = generatePassword();
       } else {
-        suggestBox.classList.remove("show");
+        suggestionBox.classList.remove("active");
       }
     }
 
-    // Generate random strong password
     function generatePassword() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
       let pass = "";
       for (let i = 0; i < 12; i++) {
         pass += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      suggestions.innerText = pass;
+      suggestedPassword.textContent = pass;
+      return pass;
     }
   </script>
 </body>
