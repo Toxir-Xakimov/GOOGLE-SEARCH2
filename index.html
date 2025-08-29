@@ -1,437 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Password Strength Checker</title>
-
-  <!-- Material Icons (for eye + check/close + copy) -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Checker</title>
   <style>
-    /* ====== Dark theme colors (kept same layout/structure as before) ====== */
-    :root{
-      --bg: #0f1220;            /* page background */
-      --panel: #171b2e;         /* card background */
-      --panel-2: #1e2540;       /* inner elements */
-      --text: #e8ecff;          /* primary text */
-      --muted: #a9b1d6;         /* secondary text */
-      --border: #2b355a;        /* subtle borders */
-      --focus: #5aa9ff;         /* focus / accent */
-      --btn: #2b7cff;           /* primary button */
-      --btn-hover: #1f65d6;     /* button hover */
-      --valid: #31d090;         /* green */
-      --invalid: #ff5c5c;       /* red */
-      --bar-weak: #ff5c5c;
-      --bar-mid: #f0c24b;
-      --bar-strong: #38d39f;
-    }
-
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #0d0f24;
+      color: #fff;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 24px;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
 
-    /* Container keeps same proportions/radius as your previous design */
     .container {
-      width: 420px;
-      background: var(--panel);
-      border-radius: 8px;
-      box-shadow: 0 6px 22px rgba(0,0,0,0.35);
-      padding: 28px 28px;
+      background: #14172e;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      width: 350px;
+      text-align: center;
     }
 
     h2 {
-      margin: 0 0 18px 0;
-      text-align: center;
-      font-size: 22px;
-      color: var(--text);
-      font-weight: 600;
+      margin-bottom: 20px;
+      color: #fff;
     }
 
-    /* Inputs: same shape/spacing; just dark colors */
-    .input-group { position: relative; margin-bottom: 14px; width: 100%; }
-    input[type="text"],
-    input[type="number"],
-    input[type="password"],
-    input[type="email"]{
-      width: 100%;
-      padding: 12px;
-      padding-right: 44px;              /* space for the eye/copy icons */
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--panel-2);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    input::placeholder{ color: var(--muted); }
-    input:focus{
-      border-color: var(--focus);
-      box-shadow: 0 0 0 3px rgba(90,169,255,0.15);
-    }
-
-    /* Eye toggle (kept exactly like your earlier design, Material Icons) */
-    .toggle-eye{
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: var(--muted);
-      user-select: none;
-    }
-
-    /* Buttons: same shape/weight; dark theme colors */
-    button {
-      padding: 9px 14px;
-      border: none;
-      border-radius: 6px;
-      background: var(--btn);
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .2s, transform .15s;
-    }
-    button:hover { background: var(--btn-hover); transform: translateY(-1px); }
-
-    .hidden { display: none; }
-
-    /* Strength bar (unchanged structure) */
-    .strength {
-      height: 8px;
-      background: #202744;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 12px 0;
-    }
-    .strength-bar {
-      height: 100%;
-      width: 0%;
-      background: var(--bar-weak);
-      transition: width .3s, background .3s;
-    }
-
-    /* Criteria list (same layout, just dark colors) */
-    .criteria { font-size: 13px; margin-top: 8px; color: var(--muted); }
-    .criteria span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-    .criteria .icon { font-size: 18px; }
-    .valid { color: var(--valid); }
-    .invalid { color: var(--invalid); }
-
-    .entropy, .crack-time {
-      font-size: 12px; color: var(--muted); margin-top: 8px;
-    }
-
-    /* Suggestion box integrated (only shows when weak) */
-    /* Suggest box hidden by default */
-.suggest-box {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #0f3460;
-  font-size: 14px;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.suggest-box.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-    .suggestion-box h3{
-      margin: 0 0 10px 0; font-size: 15px; color: var(--text); font-weight: 600;
-    }
-    .suggestions{
-      display: grid;
-      gap: 8px;
-    }
-    .suggestion-row{
+    .input-group {
       position: relative;
+      margin-bottom: 15px;
     }
-    .suggestion-input{
-      width: 100%;
-      background: var(--panel-2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 6px;
-      padding: 12px 44px 12px 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 13px;
-    }
-    .copy-btn{
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      padding: 6px;
-      border-radius: 6px;
-      color: var(--muted);
-    }
-    .copy-btn:hover{ background: rgba(255,255,255,0.06); color: var(--text); }
 
-    .actions{
+    input {
+      width: 100%;
+      padding: 10px 40px 10px 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #1e223d;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .toggle-visibility {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #bbb;
+    }
+
+    .strength-bar {
+      height: 8px;
+      background: #333;
+      border-radius: 5px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      width: 0;
+      background: red;
+      transition: width 0.4s;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      margin: 15px 0;
+    }
+
+    ul li {
+      margin: 6px 0;
+      font-size: 14px;
+    }
+
+    ul li.valid {
+      color: #00ffae;
+    }
+
+    ul li.invalid {
+      color: #ff5c5c;
+    }
+
+    .suggest-box {
+      margin-top: 20px;
+      background: #1e223d;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .suggest-box.show {
+      display: block;
+      opacity: 1;
+    }
+
+    button {
       margin-top: 10px;
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+      padding: 10px 15px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
     }
   </style>
 </head>
 <body>
-
-  <!-- STEP 1: user info (name + birth year). After confirm, show checker -->
-  <div class="container" id="infoBox">
-    <h2>Enter Your Info</h2>
-    <div class="input-group">
-      <input type="text" id="username" placeholder="Your full name"/>
-    </div>
-    <div class="input-group">
-      <input type="number" id="birthyear" placeholder="Your birth year (e.g., 1998)"/>
-    </div>
-    <button id="continueBtn">Continue</button>
-  </div>
-
-  <!-- STEP 2: password checker (same layout as before, dark colors) -->
-  <div class="container hidden" id="passwordBox">
+  <div class="container">
     <h2>Password Checker</h2>
 
+    <!-- Name input -->
     <div class="input-group">
-      <input type="password" id="password" placeholder="Enter your password"/>
-      <span class="toggle-eye material-icons" id="eye">visibility</span>
+      <input type="text" id="name" placeholder="Enter your name">
     </div>
 
-    <div class="strength">
-      <div class="strength-bar" id="strength-bar"></div>
+    <!-- Year input -->
+    <div class="input-group">
+      <input type="text" id="year" maxlength="4" placeholder="Enter birth year">
     </div>
 
-    <div class="criteria">
-      <span id="length" class="invalid">
-        <span class="material-icons icon">close</span> At least 8 characters
-      </span>
-      <span id="uppercase" class="invalid">
-        <span class="material-icons icon">close</span> Uppercase letter
-      </span>
-      <span id="lowercase" class="invalid">
-        <span class="material-icons icon">close</span> Lowercase letter
-      </span>
-      <span id="number" class="invalid">
-        <span class="material-icons icon">close</span> Number
-      </span>
-      <span id="special" class="invalid">
-        <span class="material-icons icon">close</span> Special character
-      </span>
-      <span id="personal" class="invalid">
-        <span class="material-icons icon">close</span> No personal info
-      </span>
+    <!-- Password input -->
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Enter password">
+      <span class="toggle-visibility" id="togglePassword">👁</span>
     </div>
 
-    <div class="entropy" id="entropy">Entropy: 0 bits</div>
-    <div class="crack-time" id="crack-time">Crack time: Instant</div>
+    <!-- Strength bar -->
+    <div class="strength-bar">
+      <div class="strength-bar-fill" id="strengthFill"></div>
+    </div>
 
-    <!-- Suggestion box appears ONLY when password is weak -->
-    <div class="suggestion-box hidden" id="suggestBox">
-      <h3>Suggested Strong Passwords</h3>
-      <div class="suggestions" id="suggestions"></div>
-      <div class="actions">
-        <button id="regenBtn">Generate New</button>
-      </div>
+    <!-- Rules -->
+    <ul>
+      <li id="length" class="invalid">At least 8 characters</li>
+      <li id="upper" class="invalid">Uppercase letter</li>
+      <li id="lower" class="invalid">Lowercase letter</li>
+      <li id="number" class="invalid">Number</li>
+      <li id="special" class="invalid">Special character</li>
+      <li id="personal" class="invalid">No personal info</li>
+    </ul>
+
+    <!-- Suggest box -->
+    <div class="suggest-box" id="suggestBox">
+      <strong>Suggested Strong Passwords:</strong>
+      <div id="suggestions"></div>
+      <button id="generateBtn">Generate New</button>
     </div>
   </div>
 
   <script>
-    // ======= STEP 1 logic (collect user info) =======
-    const infoBox = document.getElementById('infoBox');
-    const passwordBox = document.getElementById('passwordBox');
-    const continueBtn = document.getElementById('continueBtn');
+    const nameInput = document.getElementById("name");
+    const yearInput = document.getElementById("year");
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const strengthFill = document.getElementById("strengthFill");
+    const suggestBox = document.getElementById("suggestBox");
+    const suggestions = document.getElementById("suggestions");
+    const generateBtn = document.getElementById("generateBtn");
 
-    let userNameTokens = []; // split tokens of user's name
-    let birthYear = 0;
-    const currentYear = new Date().getFullYear();
-
-    continueBtn.addEventListener('click', () => {
-      const nameRaw = (document.getElementById('username').value || '').trim();
-      const yearRaw = (document.getElementById('birthyear').value || '').trim();
-
-      const y = Number(yearRaw);
-      if (!nameRaw || !/^\d{4}$/.test(yearRaw) || y < 1920 || y > currentYear) {
-        alert('Please enter a valid name and a birth year between 1920 and ' + currentYear + '.');
-        return;
-      }
-
-      birthYear = y;
-      // Split name into alphanumeric tokens (3+ chars) for checking
-      userNameTokens = nameRaw
-        .toLowerCase()
-        .split(/[^a-z0-9]+/i)
-        .filter(t => t.length >= 3);
-
-      infoBox.classList.add('hidden');
-      passwordBox.classList.remove('hidden');
-      document.getElementById('password').focus();
+    // Prevent numbers in name
+    nameInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/[0-9]/g, "");
     });
 
-    // ======= STEP 2 logic (password checker) =======
-    const pwdInput   = document.getElementById('password');
-    const eye        = document.getElementById('eye');
-    const bar        = document.getElementById('strength-bar');
-    const entropyEl  = document.getElementById('entropy');
-    const crackEl    = document.getElementById('crack-time');
-    const suggestBox = document.getElementById('suggestBox');
-    const suggestionsWrap = document.getElementById('suggestions');
-    const regenBtn   = document.getElementById('regenBtn');
-
-    // Eye toggle (kept from your previous design)
-    eye.addEventListener('click', () => {
-      if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        eye.textContent = 'visibility_off';
-      } else {
-        pwdInput.type = 'password';
-        eye.textContent = 'visibility';
+    // Force year to 4 digits only
+    yearInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "");
+      if (e.target.value.length > 4) {
+        e.target.value = e.target.value.slice(0, 4);
       }
     });
 
-    pwdInput.addEventListener('input', updateStrength);
-    regenBtn.addEventListener('click', () => renderSuggestions(3));
+    // Toggle password visibility
+    togglePassword.addEventListener("click", () => {
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+    });
 
-    function updateStrength() {
-      const val = pwdInput.value;
+    // Check password
+    passwordInput.addEventListener("input", checkPassword);
+    generateBtn.addEventListener("click", generatePassword);
 
-      // Update criteria
-      setCrit('length',    val.length >= 8);
-      setCrit('uppercase', /[A-Z]/.test(val));
-      setCrit('lowercase', /[a-z]/.test(val));
-      setCrit('number',    /\d/.test(val));
-      setCrit('special',   /[^A-Za-z0-9]/.test(val));
+    function checkPassword() {
+      const val = passwordInput.value;
+      const name = nameInput.value.trim().toLowerCase();
+      const year = yearInput.value.trim();
 
-      // Personal info: name tokens or any 4-digit year in [1920..currentYear]
-      const personalBad = containsPersonalInfo(val, userNameTokens, birthYear, currentYear);
-      setCrit('personal', !personalBad);
+      let score = 0;
 
-      // Score = number of valid criteria (6 total)
-      const ids = ['length','uppercase','lowercase','number','special','personal'];
-      const score = ids.reduce((acc,id)=> acc + (document.getElementById(id).classList.contains('valid') ? 1 : 0), 0);
+      // Rules
+      const rules = {
+        length: val.length >= 8,
+        upper: /[A-Z]/.test(val),
+        lower: /[a-z]/.test(val),
+        number: /[0-9]/.test(val),
+        special: /[^A-Za-z0-9]/.test(val),
+        personal: !(name && val.toLowerCase().includes(name)) && !(year && val.includes(year))
+      };
 
-      // Strength bar + labels
-      const pct = (score / 6) * 100;
-      bar.style.width = pct + '%';
-      bar.style.background = score <= 2 ? getComputedStyle(document.documentElement).getPropertyValue('--bar-weak')
-                        : score <= 4 ? getComputedStyle(document.documentElement).getPropertyValue('--bar-mid')
-                                     : getComputedStyle(document.documentElement).getPropertyValue('--bar-strong');
+      for (const rule in rules) {
+        document.getElementById(rule).className = rules[rule] ? "valid" : "invalid";
+        if (rules[rule]) score++;
+      }
 
-      // Entropy (simple pool model)
-      let pool = 0;
-      if (/[a-z]/.test(val)) pool += 26;
-      if (/[A-Z]/.test(val)) pool += 26;
-      if (/\d/.test(val))    pool += 10;
-      if (/[^A-Za-z0-9]/.test(val)) pool += 32;
-      const entropy = val.length ? Math.log2(Math.pow(pool, val.length)) : 0;
-      entropyEl.textContent = `Entropy: ${entropy.toFixed(2)} bits`;
+      // Strength bar
+      const percent = (score / 6) * 100;
+      strengthFill.style.width = percent + "%";
+      strengthFill.style.background = percent < 50 ? "red" : percent < 80 ? "orange" : "limegreen";
 
-      // Crack time (very rough)
-      const guesses = Math.pow(2, entropy);
-      let crack = 'Instant';
-      if (guesses >= 1e6  && guesses < 1e12) crack = 'Minutes';
-      else if (guesses >= 1e12 && guesses < 1e18) crack = 'Years';
-      else if (guesses >= 1e18) crack = 'Centuries';
-      crackEl.textContent = `Crack time: ${crack}`;
-
-      // Suggestion box logic:
-      // show suggestions if WEAK (score <= 2). (You asked to show it for weak passwords)
-      if (score <= 2) {
-        suggestBox.classList.remove('hidden');
-        // Generate if empty or if personal info is detected on each input
-        if (!suggestionsWrap.children.length || personalBad) renderSuggestions(3);
+      // Suggest box
+      if (score < 6) {
+        suggestBox.classList.add("show");
+        generatePassword();
       } else {
-        suggestBox.classList.add('hidden');
+        suggestBox.classList.remove("show");
       }
     }
 
-    function setCrit(id, ok){
-      const el = document.getElementById(id);
-      el.className = ok ? 'valid' : 'invalid';
-      el.querySelector('.icon').textContent = ok ? 'check' : 'close';
-    }
-
-    // Personal info detection
-    function containsPersonalInfo(pwd, tokens, byear, current) {
-      const v = (pwd || '').toLowerCase();
-
-      // name tokens
-      for (const t of tokens) {
-        if (t && v.includes(t)) return true;
+    // Generate random strong password
+    function generatePassword() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+      let pass = "";
+      for (let i = 0; i < 12; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-
-      // exact birth year
-      if (String(byear) && v.includes(String(byear))) return true;
-
-      // any 4-digit year within [1920..currentYear]
-      const yrs = v.match(/\d{4}/g) || [];
-      for (const yStr of yrs) {
-        const y = Number(yStr);
-        if (y >= 1920 && y <= current) return true;
-      }
-
-      return false;
-    }
-
-    // Suggestions (lives INSIDE the suggest box — no separate external button)
-    function showSuggestions(password) {
-  const box = document.getElementById("suggestBox");
-  const output = document.getElementById("suggestOutput");
-
-  // Generate one strong suggestion
-  const strongPass = generateStrongPassword();
-
-  output.innerHTML = `<p>⚠️ Your password is weak. Try this strong one:</p>
-                      <p><b>${strongPass}</b></p>`;
-
-  // Smooth show
-  box.classList.add("show");
-}
-
-
-    function generateStrongPassword(len=18){
-      const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const lower = 'abcdefghijklmnopqrstuvwxyz';
-      const nums  = '0123456789';
-      const syms  = '!@#$%^&*()_+[]{}<>?';
-      const all   = upper + lower + nums + syms;
-
-      // ensure at least one of each class
-      let out = '';
-      out += upper[Math.floor(Math.random()*upper.length)];
-      out += lower[Math.floor(Math.random()*lower.length)];
-      out += nums[Math.floor(Math.random()*nums.length)];
-      out += syms[Math.floor(Math.random()*syms.length)];
-
-      while (out.length < len) {
-        out += all[Math.floor(Math.random()*all.length)];
-      }
-
-      // simple shuffle
-      out = out.split('').sort(() => Math.random() - 0.5).join('');
-      return out;
+      suggestions.innerText = pass;
     }
   </script>
 </body>
 </html>
-
