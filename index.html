@@ -1,103 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Password Strength Checker</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Password Strength Checker — Enhanced</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* 🔑 SEO Background Blur */
-    .seo-background {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      font-size: 2.5rem;
-      font-weight: bold;
-      line-height: 1.8;
-      color: rgba(255,255,255,0.05);
-      z-index: -1;
-      user-select: none;
-      pointer-events: none;
-      filter: blur(6px);
-      overflow: hidden;
-      padding: 50px;
-      text-align: center;
-    }
+    /* small custom tweaks */
+    .meter-bg { background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06)); }
+    .hint { font-size: 12px; }
+    .rule-ok { color: #059669; }
+    .rule-bad { color: #6b7280; }
+    .icon-btn { display:inline-flex; align-items:center; justify-content:center; }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white">
-  
-  <!-- 🔑 SEO Keyword Background -->
-  <div class="seo-background">
-    Password Strength Checker • Free Password Checker • Online Password Strength Test • 
-    Strong Password Generator • Secure Password Maker • Random Password Tool • 
-    Password Entropy Calculator • Test My Password • Password Security Analyzer • 
-    How Strong Is My Password • Generate Secure Passwords • 
-    Best Password Generator Online • Password Strength Meter
-  </div>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Left: Checker -->
+    <section class="bg-white rounded-2xl shadow-lg p-6">
+      <header class="flex items-center justify-between mb-4">
+        <div>
+          <h1 class="text-lg font-semibold text-gray-800">Password Strength Checker</h1>
+          <p class="text-sm text-gray-500">Real-time feedback, entropy estimate, and actionable suggestions.</p>
+        </div>
+        <div class="text-xs text-gray-400">v1.1</div>
+      </header>
 
-  <!-- Main Box -->
-  <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full relative z-10">
-    <h1 class="text-3xl font-bold text-center mb-6">🔒 Password Strength Checker</h1>
-    <input
-      id="passwordInput"
-      type="password"
-      placeholder="Enter your password"
-      class="w-full p-3 rounded-lg border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-    />
-    <div id="strengthBar" class="w-full h-3 bg-gray-700 rounded-lg mt-4 overflow-hidden">
-      <div id="strengthFill" class="h-3 w-0 bg-red-500 transition-all duration-500"></div>
-    </div>
-    <p id="strengthText" class="mt-3 text-center font-semibold">Enter a password</p>
-    <button
-      onclick="generatePassword()"
-      class="mt-5 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all"
-    >
-      🔑 Generate Strong Password
-    </button>
+      <!-- Input -->
+      <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+      <div class="relative">
+        <input id="password" type="password" autocomplete="new-password" class="w-full pr-28 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Type or generate a password" aria-describedby="strengthText" />
+
+        <!-- Buttons: copy, toggle -->
+        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+          <button id="copyBtn" class="icon-btn bg-gray-50 hover:bg-gray-100 border border-gray-100 p-2 rounded-lg" title="Copy password">
+            <!-- Copy icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 2a2 2 0 00-2 2v1H5a2 2 0 00-2 2v7a2 2 0 002 2h6a2 2 0 002-2v-1h1a2 2 0 002-2V8a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H8z"/></svg>
+          </button>
+
+          <button id="toggleVisibility" class="icon-btn bg-gray-50 hover:bg-gray-100 border border-gray-100 p-2 rounded-lg" title="Show / hide">
+            <!-- Eye icon (will toggle to eye-off) -->
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Strength bar and text -->
+      <div class="mt-4">
+        <div class="h-3 rounded-full meter-bg overflow-hidden">
+          <div id="strengthBar" class="h-full w-0 transition-all duration-300"></div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <p id="strengthText" class="text-sm font-medium text-gray-700" aria-live="polite">Enter a password</p>
+          <div class="text-xs text-gray-500" id="entropyText">— bits</div>
+        </div>
+
+        <p id="crackEstimate" class="mt-2 text-xs text-gray-500">Estimated time to crack: —</p>
+      </div>
+
+      <!-- Checklist -->
+      <div class="mt-4">
+        <ul id="criteriaList" class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/></svg> <span data-rule="length">At least 12 characters (recommended)</span></li>
+          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a2 2 0 00-2 2v1H6a2 2 0 00-2 2v3h12V7a2 2 0 00-2-2h-2V4a2 2 0 00-2-2z"/></svg> <span data-rule="uppercase">Uppercase letter</span></li>
+          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3h14v14H3z"/></svg> <span data-rule="lowercase">Lowercase letter</span></li>
+          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M8 12l2-2 2 2 4-4"/></svg> <span data-rule="number">Number</span></li>
+          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4h12v12H4z"/></svg> <span data-rule="special">Special character</span></li>
+          <li id="commonWarn" class="flex items-center gap-2 text-yellow-600 hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg> Contains common patterns (e.g. "1234", "password")</li>
+        </ul>
+      </div>
+
+      <div class="mt-4 flex items-center gap-3">
+        <button id="suggestBtn" class="px-3 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700">Improve suggestions</button>
+        <button id="clearBtn" class="px-3 py-2 border border-gray-200 rounded-md hover:bg-gray-50">Clear</button>
+        <div id="copiedToast" role="status" aria-live="polite" class="ml-auto text-sm text-green-600 hidden">Copied!</div>
+      </div>
+    </section>
+
+    <!-- Right: Generator & options -->
+    <aside class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-md font-semibold text-gray-800 mb-2">Generate a strong password</h2>
+      <p class="text-sm text-gray-500 mb-4">Customize length and character types, then generate.</p>
+
+      <div class="space-y-4">
+        <div>
+          <label for="length" class="block text-sm font-medium text-gray-700">Length: <span id="lengthVal" class="font-semibold">16</span></label>
+          <input id="length" type="range" min="8" max="64" value="16" class="w-full mt-2" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2"><input id="incLower" type="checkbox" checked /> Lowercase</label>
+          <label class="flex items-center gap-2"><input id="incUpper" type="checkbox" checked /> Uppercase</label>
+          <label class="flex items-center gap-2"><input id="incNums" type="checkbox" checked /> Numbers</label>
+          <label class="flex items-center gap-2"><input id="incSymbols" type="checkbox" checked /> Symbols</label>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="generateBtn" class="flex-1 px-3 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700">Generate</button>
+          <button id="regenerateBtn" class="px-3 py-2 border border-gray-200 rounded-md">Regenerate</button>
+          <button id="copyGenBtn" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">Copy</button>
+        </div>
+
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700">Generated</label>
+          <div class="mt-1 p-3 bg-gray-50 rounded-md break-all" id="generatedBox">—</div>
+        </div>
+
+        <div class="mt-3 text-xs text-gray-500">
+          <strong>Notes:</strong> Avoid using personal info. The checker detects common sequences and repeated characters and will reduce the strength estimate accordingly.
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script>
-    // === Password Strength Checker ===
-    const input = document.getElementById("passwordInput");
-    const bar = document.getElementById("strengthFill");
-    const text = document.getElementById("strengthText");
+    // Elements
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    const entropyText = document.getElementById('entropyText');
+    const crackEstimate = document.getElementById('crackEstimate');
+    const toggleBtn = document.getElementById('toggleVisibility');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const copyBtn = document.getElementById('copyBtn');
+    const copiedToast = document.getElementById('copiedToast');
+    const criteriaItems = document.querySelectorAll('#criteriaList [data-rule]');
+    const commonWarn = document.getElementById('commonWarn');
 
-    input.addEventListener("input", () => {
-      const val = input.value;
-      let score = 0;
+    // Generator elements
+    const lengthInput = document.getElementById('length');
+    const lengthVal = document.getElementById('lengthVal');
+    const incLower = document.getElementById('incLower');
+    const incUpper = document.getElementById('incUpper');
+    const incNums = document.getElementById('incNums');
+    const incSymbols = document.getElementById('incSymbols');
+    const generateBtn = document.getElementById('generateBtn');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const copyGenBtn = document.getElementById('copyGenBtn');
+    const generatedBox = document.getElementById('generatedBox');
 
-      if (val.length > 6) score++;
-      if (val.length > 10) score++;
-      if (/[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^A-Za-z0-9]/.test(val)) score++;
+    // small common passwords list (not exhaustive)
+    const COMMON_PASSWORDS = ['password','123456','12345678','qwerty','abc123','letmein','111111','123123','admin','welcome','iloveyou'];
 
-      const strengthLevels = [
-        { width: "0%", color: "bg-red-500", text: "Enter a password" },
-        { width: "20%", color: "bg-red-500", text: "Very Weak" },
-        { width: "40%", color: "bg-orange-500", text: "Weak" },
-        { width: "60%", color: "bg-yellow-500", text: "Moderate" },
-        { width: "80%", color: "bg-green-500", text: "Strong" },
-        { width: "100%", color: "bg-emerald-600", text: "Very Strong" },
-      ];
+    // character sets
+    const SETS = {
+      lower: 'abcdefghijklmnopqrstuvwxyz',
+      upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      nums: '0123456789',
+      symbols: "!@#$%^&*()-_=+[]{};:,.<>?/`~|'"
+    };
 
-      const level = strengthLevels[score];
-      bar.className = `h-3 ${level.color} transition-all duration-500`;
-      bar.style.width = level.width;
-      text.textContent = level.text;
+    // helpers
+    function hasUpper(s) { return /[A-Z]/.test(s); }
+    function hasLower(s) { return /[a-z]/.test(s); }
+    function hasNumber(s) { return /[0-9]/.test(s); }
+    function hasSpecial(s) { return /[^A-Za-z0-9]/.test(s); }
+    function containsCommon(pass) {
+      const low = pass.toLowerCase();
+      for (const c of COMMON_PASSWORDS) if (low.includes(c)) return true;
+      return false;
+    }
+
+    function detectSequential(s) {
+      if (!s) return false;
+      const seqLen = 3; // look for runs of 3 or more
+      for (let i = 0; i <= s.length - seqLen; i++) {
+        const a = s.charCodeAt(i);
+        const b = s.charCodeAt(i+1);
+        const c = s.charCodeAt(i+2);
+        if (b - a === 1 && c - b === 1) return true;
+        if (a - b === 1 && b - c === 1) return true;
+      }
+      return false;
+    }
+
+    function detectRepetition(s) {
+      if (!s) return false;
+      for (let i = 0; i <= s.length - 4; i++) {
+        if (s[i] === s[i+1] && s[i] === s[i+2] && s[i] === s[i+3]) return true;
+      }
+      return false;
+    }
+
+    // entropy calculation: approximate pool from presence of types
+    function estimateEntropy(pass) {
+      if (!pass) return 0;
+      let pool = 0;
+      if (hasLower(pass)) pool += 26;
+      if (hasUpper(pass)) pool += 26;
+      if (hasNumber(pass)) pool += 10;
+      if (hasSpecial(pass)) pool += 32;
+      // if pool is still small, fallback to freq of unique chars
+      if (pool === 0) pool = Math.min(94, new Set(pass).size);
+      const entropyBits = pass.length * Math.log2(pool || 1);
+      return Math.round(entropyBits*100)/100;
+    }
+
+    // human readable time for guesses/sec scenario
+    function humanTime(seconds) {
+      if (!isFinite(seconds) || seconds > 1e15) return 'centuries';
+      const units = [ ['years', 60*60*24*365], ['days', 60*60*24], ['hours', 60*60], ['minutes',60], ['seconds',1] ];
+      for (const [name, secs] of units) {
+        if (seconds >= secs) {
+          const v = Math.floor(seconds / secs);
+          return `${v} ${name}`;
+        }
+      }
+      return 'less than a second';
+    }
+
+    function estimateCrackTime(entropyBits) {
+      // two scenarios:
+      const guesses = Math.pow(2, entropyBits);
+      const onlineSpeed = 100; // guesses/sec (online throttled)
+      const offlineSpeed = 1e10; // 10 billion guesses/sec (fast GPU rigs)
+      const onlineSeconds = guesses / onlineSpeed;
+      const offlineSeconds = guesses / offlineSpeed;
+      return { online: humanTime(onlineSeconds), offline: humanTime(offlineSeconds) };
+    }
+
+    function scoreFromEntropy(entropy) {
+      // map entropy to 0-100
+      const max = 80; // bits used as 'max' for scaling
+      return Math.min(100, Math.round((entropy / max) * 100));
+    }
+
+    function updateCriteria(pass) {
+      const rules = {
+        length: pass.length >= 12,
+        uppercase: hasUpper(pass),
+        lowercase: hasLower(pass),
+        number: hasNumber(pass),
+        special: hasSpecial(pass)
+      };
+      for (const el of criteriaItems) {
+        const rule = el.getAttribute('data-rule');
+        if (rules[rule]) {
+          el.classList.add('rule-ok');
+          el.classList.remove('rule-bad');
+          el.querySelector('svg')?.classList?.add('text-green-500');
+        } else {
+          el.classList.remove('rule-ok');
+          el.classList.add('rule-bad');
+        }
+      }
+      // warnings
+      if (containsCommon(pass) || detectSequential(pass) || detectRepetition(pass)) {
+        commonWarn.classList.remove('hidden');
+      } else {
+        commonWarn.classList.add('hidden');
+      }
+    }
+
+    function updateStrength(pass) {
+      const entropy = estimateEntropy(pass);
+      const score = scoreFromEntropy(entropy);
+      strengthBar.style.width = score + '%';
+      // color mapping
+      if (score < 30) {
+        strengthBar.className = 'h-full w-' + score + ' bg-red-500 transition-all duration-300';
+        strengthText.textContent = 'Very weak';
+      } else if (score < 50) {
+        strengthBar.className = 'h-full bg-orange-400 transition-all duration-300';
+        strengthText.textContent = 'Weak';
+      } else if (score < 75) {
+        strengthBar.className = 'h-full bg-yellow-400 transition-all duration-300';
+        strengthText.textContent = 'Good';
+      } else {
+        strengthBar.className = 'h-full bg-emerald-500 transition-all duration-300';
+        strengthText.textContent = 'Strong';
+      }
+
+      entropyText.textContent = entropy ? entropy + ' bits' : '— bits';
+      const times = estimateCrackTime(entropy);
+      crackEstimate.textContent = `Estimated time to crack (online/offline): ${times.online} / ${times.offline}`;
+    }
+
+    // event listeners
+    passwordInput.addEventListener('input', (e) => {
+      const pass = e.target.value || '';
+      updateCriteria(pass);
+      updateStrength(pass);
     });
 
-    // === Password Generator ===
-    function generatePassword() {
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-      let password = "";
-      for (let i = 0; i < 12; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    // toggle show/hide
+    let visible = false;
+    toggleBtn.addEventListener('click', () => {
+      visible = !visible;
+      passwordInput.type = visible ? 'text' : 'password';
+      // swap eye icon (simple approach: rotate)
+      eyeIcon.style.transform = visible ? 'scaleX(-1)' : 'none';
+    });
+
+    // copy password
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(passwordInput.value || '');
+        copiedToast.classList.remove('hidden');
+        setTimeout(()=> copiedToast.classList.add('hidden'), 1500);
+      } catch (err) {
+        alert('Copy failed');
       }
-      input.value = password;
-      input.dispatchEvent(new Event("input"));
+    });
+
+    // buttons: clear / suggestions
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      passwordInput.value = '';
+      updateCriteria('');
+      updateStrength('');
+    });
+
+    document.getElementById('suggestBtn').addEventListener('click', () => {
+      // make quick suggestions: add missing types or length
+      const pass = passwordInput.value || '';
+      let newPass = pass;
+      if (!hasLower(newPass)) newPass += 'a';
+      if (!hasUpper(newPass)) newPass += 'A';
+      if (!hasNumber(newPass)) newPass += '1';
+      if (!hasSpecial(newPass)) newPass += '!';
+      if (newPass.length < 12) newPass += 'x'.repeat(12 - newPass.length);
+      passwordInput.value = newPass;
+      passwordInput.dispatchEvent(new Event('input'));
+    });
+
+    // length slider
+    lengthInput.addEventListener('input', () => {
+      lengthVal.textContent = lengthInput.value;
+    });
+
+    function generatePassword(length, opts) {
+      let pool = '';
+      if (opts.lower) pool += SETS.lower;
+      if (opts.upper) pool += SETS.upper;
+      if (opts.nums) pool += SETS.nums;
+      if (opts.symbols) pool += SETS.symbols;
+      if (!pool) return '';
+      let pw = '';
+      const cryptoVals = new Uint32Array(length);
+      window.crypto.getRandomValues(cryptoVals);
+      for (let i = 0; i < length; i++) {
+        const idx = cryptoVals[i] % pool.length;
+        pw += pool.charAt(idx);
+      }
+      // ensure at least one of each selected type (if possible)
+      const pieces = [];
+      if (opts.lower) pieces.push(SETS.lower[Math.floor(Math.random()*SETS.lower.length)]);
+      if (opts.upper) pieces.push(SETS.upper[Math.floor(Math.random()*SETS.upper.length)]);
+      if (opts.nums) pieces.push(SETS.nums[Math.floor(Math.random()*SETS.nums.length)]);
+      if (opts.symbols) pieces.push(SETS.symbols[Math.floor(Math.random()*SETS.symbols.length)]);
+      // splice guaranteed pieces into random positions
+      for (const ch of pieces) {
+        const pos = Math.floor(Math.random()*pw.length);
+        pw = pw.substring(0,pos) + ch + pw.substring(pos+1);
+      }
+      return pw;
     }
+
+    // generate / regenerate / copy generated
+    generateBtn.addEventListener('click', () => {
+      const opts = { lower: incLower.checked, upper: incUpper.checked, nums: incNums.checked, symbols: incSymbols.checked };
+      const len = Number(lengthInput.value);
+      const pw = generatePassword(len, opts);
+      generatedBox.textContent = pw;
+      passwordInput.value = pw;
+      passwordInput.dispatchEvent(new Event('input'));
+    });
+
+    regenerateBtn.addEventListener('click', () => {
+      generateBtn.click();
+    });
+
+    copyGenBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(generatedBox.textContent || '');
+        copyGenBtn.textContent = 'Copied';
+        setTimeout(()=> copyGenBtn.textContent = 'Copy', 1200);
+      } catch (err) { alert('Copy failed'); }
+    });
+
+    // initial render
+    updateCriteria('');
+    updateStrength('');
   </script>
 </body>
 </html>
