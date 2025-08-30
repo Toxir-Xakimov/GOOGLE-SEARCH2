@@ -1,109 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Password Strength Checker — Enhanced</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Strength Checker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* small custom tweaks */
-    .meter-bg { background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06)); }
-    .hint { font-size: 12px; }
-    .rule-ok { color: #059669; }
-    .rule-bad { color: #6b7280; }
-    .icon-btn { display:inline-flex; align-items:center; justify-content:center; }
-
-    /* ✅ SEO keyword background */
     .seo-background {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 200%;
+      height: 200%;
+      transform: translate(-50%, -50%) rotate(15deg);
       font-size: 3rem;
       font-weight: bold;
-      color: rgba(0,0,0,0.05); /* subtle faded */
-      z-index: -1; /* stay behind UI */
-      filter: blur(8px);
-      white-space: nowrap;
-      overflow: hidden;
+      color: rgba(0,0,0,0.05);
+      z-index: -1;
       user-select: none;
       pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(0,0,0,0.07), transparent),
+        radial-gradient(circle at 8px 8px, rgba(0,0,0,0.07), transparent);
+      background-size: 16px 16px;
+      mix-blend-mode: screen;
+      filter: blur(4px) contrast(300);
+      white-space: nowrap;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center p-6">
-
-  <!-- ✅ SEO Background -->
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white">
+  
+  <!-- SEO Keyword Background -->
   <div class="seo-background">
-    Password Strength Checker • Free Password Checker • Password Generator • Password Entropy Calculator • 
-    Check Password Online • How Strong Is My Password • Secure Password Generator • Password Strength Meter • 
+    Password Strength Checker • Free Password Checker • Password Generator • Password Entropy Calculator •
+    Check Password Online • How Strong Is My Password • Secure Password Generator • Password Strength Meter •
     Test Password Online • Random Password Generator • Strong Password Maker • Secure Password Tester
   </div>
 
-  <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Left: Checker -->
-    <section class="bg-white rounded-2xl shadow-lg p-6">
-      <header class="flex items-center justify-between mb-4">
-        <div>
-          <h1 class="text-lg font-semibold text-gray-800">Password Strength Checker</h1>
-          <p class="text-sm text-gray-500">Real-time feedback, entropy estimate, and actionable suggestions.</p>
-        </div>
-        <div class="text-xs text-gray-400">v1.1</div>
-      </header>
-      <!-- Input -->
-      <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-      <div class="relative">
-        <input id="password" type="password" autocomplete="new-password" class="w-full pr-28 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Type or generate a password" aria-describedby="strengthText" />
-        <!-- Buttons: copy, toggle -->
-        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-          <button id="copyBtn" class="icon-btn bg-gray-50 hover:bg-gray-100 border border-gray-100 p-2 rounded-lg" title="Copy password">
-            <!-- Copy icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 2a2 2 0 00-2 2v1H5a2 2 0 00-2 2v7a2 2 0 002 2h6a2 2 0 002-2v-1h1a2 2 0 002-2V8a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H8z"/></svg>
-          </button>
-          <button id="toggleVisibility" class="icon-btn bg-gray-50 hover:bg-gray-100 border border-gray-100 p-2 rounded-lg" title="Show / hide">
-            <!-- Eye icon -->
-            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <!-- Strength bar and text -->
-      <div class="mt-4">
-        <div class="h-3 rounded-full meter-bg overflow-hidden">
-          <div id="strengthBar" class="h-full w-0 transition-all duration-300"></div>
-        </div>
-        <div class="flex items-center justify-between mt-2">
-          <p id="strengthText" class="text-sm font-medium text-gray-700" aria-live="polite">Enter a password</p>
-          <div class="text-xs text-gray-500" id="entropyText">— bits</div>
-        </div>
-        <p id="crackEstimate" class="mt-2 text-xs text-gray-500">Estimated time to crack: —</p>
-      </div>
-      <!-- Checklist -->
-      <div class="mt-4">
-        <ul id="criteriaList" class="space-y-2 text-sm text-gray-600">
-          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/></svg> <span data-rule="length">At least 12 characters (recommended)</span></li>
-          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a2 2 0 00-2 2v1H6a2 2 0 00-2 2v3h12V7a2 2 0 00-2-2h-2V4a2 2 0 00-2-2z"/></svg> <span data-rule="uppercase">Uppercase letter</span></li>
-          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3h14v14H3z"/></svg> <span data-rule="lowercase">Lowercase letter</span></li>
-          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M8 12l2-2 2 2 4-4"/></svg> <span data-rule="number">Number</span></li>
-          <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4h12v12H4z"/></svg> <span data-rule="special">Special character</span></li>
-          <li id="commonWarn" class="flex items-center gap-2 text-yellow-600 hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg> Contains common patterns (e.g. "1234", "password")</li>
-        </ul>
-      </div>
-      <div class="mt-4 flex items-center gap-3">
-        <button id="suggestBtn" class="px-3 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700">Improve suggestions</button>
-        <button id="clearBtn" class="px-3 py-2 border border-gray-200 rounded-md hover:bg-gray-50">Clear</button>
-        <div id="copiedToast" role="status" aria-live="polite" class="ml-auto text-sm text-green-600 hidden">Copied!</div>
-      </div>
-    </section>
-
-    <!-- Right: Generator & options -->
-    <aside class="bg-white rounded-2xl shadow-lg p-6">
-      <!-- ... (your generator section unchanged) ... -->
-    </aside>
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full relative z-10">
+    <h1 class="text-3xl font-bold text-center mb-6">🔒 Password Strength Checker</h1>
+    <input
+      id="passwordInput"
+      type="password"
+      placeholder="Enter your password"
+      class="w-full p-3 rounded-lg border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+    />
+    <div id="strengthBar" class="w-full h-3 bg-gray-700 rounded-lg mt-4 overflow-hidden">
+      <div id="strengthFill" class="h-3 w-0 bg-red-500 transition-all duration-500"></div>
+    </div>
+    <p id="strengthText" class="mt-3 text-center font-semibold">Enter a password</p>
+    <button
+      onclick="generatePassword()"
+      class="mt-5 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all"
+    >
+      🔑 Generate Strong Password
+    </button>
   </div>
 
-<script>
-  /* your existing script unchanged */
-</script>
+  <script>
+    const input = document.getElementById("passwordInput");
+    const bar = document.getElementById("strengthFill");
+    const text = document.getElementById("strengthText");
+
+    input.addEventListener("input", () => {
+      const val = input.value;
+      let score = 0;
+
+      if (val.length > 6) score++;
+      if (val.length > 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const strengthLevels = [
+        { width: "0%", color: "bg-red-500", text: "Enter a password" },
+        { width: "20%", color: "bg-red-500", text: "Very Weak" },
+        { width: "40%", color: "bg-orange-500", text: "Weak" },
+        { width: "60%", color: "bg-yellow-500", text: "Moderate" },
+        { width: "80%", color: "bg-green-500", text: "Strong" },
+        { width: "100%", color: "bg-emerald-600", text: "Very Strong" },
+      ];
+
+      const level = strengthLevels[score];
+      bar.className = `h-3 ${level.color} transition-all duration-500`;
+      bar.style.width = level.width;
+      text.textContent = level.text;
+    });
+
+    function generatePassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+      let password = "";
+      for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      input.value = password;
+      input.dispatchEvent(new Event("input"));
+    }
+  </script>
 </body>
 </html>
