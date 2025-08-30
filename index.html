@@ -1,98 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Password Strength Checker</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    /* --- Halftone + blurred keyword background --- */
+    /* 🔑 SEO Background Blur */
     .seo-background {
       position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: rotate(-15deg);
-      width: 160%;
-      height: 160%;
-      pointer-events: none;
-      z-index: 0; /* ABOVE page background, BELOW main UI (which will be z-index:10) */
-      overflow: hidden;
-    }
-
-    /* big keywords text (plain HTML text so search engines read it) */
-    .seo-background .keywords {
-      font-weight: 800;
-      color: rgba(255,255,255,0.045);   /* tweak opacity to taste */
-      white-space: nowrap;
-      letter-spacing: 8px;
-      filter: blur(4px) saturate(1.1);
-      font-size: clamp(48px, 8vw, 160px);
-      transform: translateZ(0);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      font-size: 2.5rem;
+      font-weight: bold;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.05);
+      z-index: -1;
       user-select: none;
-    }
-
-    /* dot/halftone overlay */
-    .seo-background .halftone {
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle, rgba(255,255,255,0.06) 1px, rgba(255,255,255,0) 1px);
-      background-size: 10px 10px; /* dot size/spacing */
-      mix-blend-mode: overlay;
-      filter: blur(6px) contrast(140%);
-      opacity: 0.9;
-      transform: scale(1.12);
       pointer-events: none;
-      animation: drift 14s linear infinite alternate;
+      filter: blur(6px);
+      overflow: hidden;
+      padding: 50px;
+      text-align: center;
     }
-
-    @keyframes drift {
-      from { transform: translate(-2%, -1%) scale(1.12) rotate(0.5deg); }
-      to   { transform: translate(2%, 1%) scale(1.14) rotate(-0.5deg); }
-    }
-
-    /* make sure main UI is above the seo background */
-    .ui-wrap { position: relative; z-index: 10; }
-
-    /* small helper: darker box style retained from your version */
-    .card { background: linear-gradient(180deg, rgba(31,41,55,0.72), rgba(17,24,39,0.85)); }
   </style>
 </head>
-
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white">
-
-  <!-- SEO keyword background (plain text + halftone overlay) -->
-  <div class="seo-background" aria-hidden="true">
-    <div class="keywords">
-      Password Strength Checker • Free Password Checker • Password Generator • Password Entropy Calculator •
-      Check Password Online • How Strong Is My Password • Secure Password Generator • Password Strength Meter •
-      Test Password Online • Random Password Generator • Strong Password Maker • Secure Password Tester
-    </div>
-    <div class="halftone" ></div>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white">
+  
+  <!-- 🔑 SEO Keyword Background -->
+  <div class="seo-background">
+    Password Strength Checker • Free Password Checker • Online Password Strength Test • 
+    Strong Password Generator • Secure Password Maker • Random Password Tool • 
+    Password Entropy Calculator • Test My Password • Password Security Analyzer • 
+    How Strong Is My Password • Generate Secure Passwords • 
+    Best Password Generator Online • Password Strength Meter
   </div>
 
-  <!-- Main UI (kept compact like your 100-line version) -->
-  <div class="ui-wrap bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full relative z-10 card">
+  <!-- Main Box -->
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full relative z-10">
     <h1 class="text-3xl font-bold text-center mb-6">🔒 Password Strength Checker</h1>
-
     <input
       id="passwordInput"
       type="password"
       placeholder="Enter your password"
       class="w-full p-3 rounded-lg border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
     />
-
     <div id="strengthBar" class="w-full h-3 bg-gray-700 rounded-lg mt-4 overflow-hidden">
       <div id="strengthFill" class="h-3 w-0 bg-red-500 transition-all duration-500"></div>
     </div>
-
     <p id="strengthText" class="mt-3 text-center font-semibold">Enter a password</p>
-
     <button
-      id="genBtn"
+      onclick="generatePassword()"
       class="mt-5 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all"
     >
       🔑 Generate Strong Password
@@ -100,47 +58,46 @@
   </div>
 
   <script>
+    // === Password Strength Checker ===
     const input = document.getElementById("passwordInput");
-    const fill = document.getElementById("strengthFill");
-    const txt = document.getElementById("strengthText");
-    const genBtn = document.getElementById("genBtn");
+    const bar = document.getElementById("strengthFill");
+    const text = document.getElementById("strengthText");
 
     input.addEventListener("input", () => {
-      const v = input.value || "";
+      const val = input.value;
       let score = 0;
-      if (v.length > 6) score++;
-      if (v.length > 10) score++;
-      if (/[A-Z]/.test(v)) score++;
-      if (/[0-9]/.test(v)) score++;
-      if (/[^A-Za-z0-9]/.test(v)) score++;
 
-      const levels = [
-        { w: "0%",  c: "bg-red-500",    t: "Enter a password" },
-        { w: "20%", c: "bg-red-500",    t: "Very Weak" },
-        { w: "40%", c: "bg-orange-500", t: "Weak" },
-        { w: "60%", c: "bg-yellow-500", t: "Moderate" },
-        { w: "80%", c: "bg-green-500",  t: "Strong" },
-        { w: "100%",c: "bg-emerald-600",t: "Very Strong" }
+      if (val.length > 6) score++;
+      if (val.length > 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const strengthLevels = [
+        { width: "0%", color: "bg-red-500", text: "Enter a password" },
+        { width: "20%", color: "bg-red-500", text: "Very Weak" },
+        { width: "40%", color: "bg-orange-500", text: "Weak" },
+        { width: "60%", color: "bg-yellow-500", text: "Moderate" },
+        { width: "80%", color: "bg-green-500", text: "Strong" },
+        { width: "100%", color: "bg-emerald-600", text: "Very Strong" },
       ];
-      const level = levels[score];
-      fill.className = `h-3 ${level.c} transition-all duration-500`;
-      fill.style.width = level.w;
-      txt.textContent = level.t;
+
+      const level = strengthLevels[score];
+      bar.className = `h-3 ${level.color} transition-all duration-500`;
+      bar.style.width = level.width;
+      text.textContent = level.text;
     });
 
-    genBtn.addEventListener("click", () => {
+    // === Password Generator ===
+    function generatePassword() {
       const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-      let pw = "";
-      const len = 16;
-      for (let i=0;i<len;i++){
-        pw += chars.charAt(Math.floor(Math.random()*chars.length));
+      let password = "";
+      for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      input.value = pw;
+      input.value = password;
       input.dispatchEvent(new Event("input"));
-    });
-
-    // initial
-    input.dispatchEvent(new Event("input"));
+    }
   </script>
 </body>
 </html>
