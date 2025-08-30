@@ -12,9 +12,22 @@
     .rule-ok { color: #059669; }
     .rule-bad { color: #6b7280; }
     .icon-btn { display:inline-flex; align-items:center; justify-content:center; }
+
+    .seo-keywords {
+    opacity: 0.02;          /* almost invisible */
+    filter: blur(4px);       /* blurred so it won't interfere visually */
+    z-index: -10;            /* behind all content */
+    white-space: pre-wrap;   /* allow wrapping of long text */
+    pointer-events: none;    /* not interactive */
+    user-select: none;       /* cannot be selected */
+  }
   </style>
+
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="seo-keywords absolute inset-0 pointer-events-none select-none overflow-hidden">
+  Password strength checker, strong password generator, password security, password entropy, online password test, secure password tips, password suggestion tool, password complexity, password feedback, cyber security, safe passwords, password audit, password safety, password protection, password evaluation
+</div>
   <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Left: Checker -->
     <section class="bg-white rounded-2xl shadow-lg p-6">
@@ -384,3 +397,4 @@
   </script>
 </body>
 </html>
+
