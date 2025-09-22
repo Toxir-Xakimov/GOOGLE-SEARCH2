@@ -1,21 +1,19 @@
-// ==== Password Generator (Build Page) ====
-
 function generatePassword() {
-  const lengthSlider = document.querySelector("#length");
-  const lengthValue = document.querySelector("#length-value");
-  const upper = document.querySelector("#uppercase");
-  const lower = document.querySelector("#lowercase");
-  const numbers = document.querySelector("#numbers");
-  const symbols = document.querySelector("#symbols");
-  const output = document.querySelector("#password-output");
+  const length = parseInt(document.querySelector("#length").value);
+  document.querySelector("#length-value").textContent = length;
 
-  const length = parseInt(lengthSlider?.value || 12);
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const nums = "0123456789";
+  const syms = "!@#$%^&*()_+-=[]{}|;:,.<>?/";
 
   let chars = "";
-  if (upper?.checked) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  if (lower?.checked) chars += "abcdefghijklmnopqrstuvwxyz";
-  if (numbers?.checked) chars += "0123456789";
-  if (symbols?.checked) chars += "!@#$%^&*()_+-=[]{}|;:,.<>?/";
+  if (document.querySelector("#uppercase").checked) chars += upper;
+  if (document.querySelector("#lowercase").checked) chars += lower;
+  if (document.querySelector("#numbers").checked) chars += nums;
+  if (document.querySelector("#symbols").checked) chars += syms;
+
+  const output = document.querySelector("#password-output");
 
   if (!chars) {
     output.value = "⚠ Select at least one option";
@@ -29,16 +27,16 @@ function generatePassword() {
   output.value = password;
 }
 
-// Update slider value
-const lengthSlider = document.querySelector("#length");
-if (lengthSlider) {
-  lengthSlider.addEventListener("input", (e) => {
-    document.querySelector("#length-value").textContent = e.target.value;
-  });
-}
+// Events
+document.querySelector("#generate-btn").addEventListener("click", generatePassword);
+document.querySelector("#length").addEventListener("input", e => {
+  document.querySelector("#length-value").textContent = e.target.value;
+});
 
-// Bind generate button
-const generateBtn = document.querySelector("#generate-btn");
-if (generateBtn) {
-  generateBtn.addEventListener("click", generatePassword);
-}
+// Copy button
+document.querySelector("#copy-btn").addEventListener("click", () => {
+  const output = document.querySelector("#password-output");
+  output.select();
+  document.execCommand("copy");
+  alert("Password copied!");
+});
