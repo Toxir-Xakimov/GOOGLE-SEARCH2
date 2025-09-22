@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Check Password Strength</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Password Strength Checker — PassGuard</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col">
 
-  <nav class="bg-white shadow-md">
+  <!-- Navbar -->
+  <!-- Navbar -->
+<nav class="bg-white shadow-md">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <!-- Logo -->
     <a href="index.html" class="flex items-center space-x-2">
@@ -25,12 +28,30 @@
   </div>
 </nav>
 
-  <!-- Navbar -->
-  <!-- include navbar code here -->
+<!-- Footer -->
+<footer class="text-center text-sm text-gray-500 py-4">
+  © 2025 PassGuard — All rights reserved
+</footer>
 
-  <main class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Check Your Password Strength</h1>
-    <!-- paste your checker section here from your original code -->
+  <!-- (paste common navbar here) -->
+
+  <main class="flex-1 flex items-center justify-center p-6">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
+      <h1 class="text-lg font-semibold text-gray-800 mb-2">Password Strength Checker</h1>
+      <p class="text-sm text-gray-500 mb-4">Enter your password below and get real-time feedback.</p>
+
+      <!-- Password Checker -->
+      <input id="passwordInput" type="password" placeholder="Enter password" class="w-full border rounded px-3 py-2 mb-4">
+      <div id="strengthMeter" class="h-3 w-full bg-gray-200 rounded mb-4">
+        <div id="strengthBar" class="h-3 bg-red-500 rounded w-0"></div>
+      </div>
+      <p id="feedback" class="text-sm text-gray-600"></p>
+    </div>
   </main>
+
+  <!-- Footer -->
+  <!-- (paste common footer here) -->
+
+  <script src="checker.js"></script>
 </body>
 </html>
