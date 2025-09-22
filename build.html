@@ -4,56 +4,60 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Build Password — PassGuard</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <nav class="bg-white shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between">
       <a href="index.html" class="flex items-center space-x-2">
         <i class="fas fa-shield-alt text-indigo-600 text-2xl"></i>
         <span class="font-bold text-indigo-600">PassGuard</span>
       </a>
       <div class="space-x-6 text-gray-700 font-medium">
-        <a href="build.html" class="hover:text-indigo-600"><i class="fas fa-tools"></i> Build Password</a>
-        <a href="check.html" class="hover:text-indigo-600"><i class="fas fa-check-circle"></i> Check Strength</a>
-        <a href="about.html" class="hover:text-indigo-600"><i class="fas fa-info-circle"></i> About</a>
+        <a href="build.html"><i class="fas fa-tools"></i> Build</a>
+        <a href="check.html"><i class="fas fa-check-circle"></i> Check</a>
+        <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
       </div>
     </div>
   </nav>
 
+  <!-- Main -->
   <main class="flex-1 flex items-center justify-center p-6">
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
-      <h1 class="text-lg font-semibold text-gray-800 mb-2"><i class="fas fa-tools"></i> Build a Strong Password</h1>
-      <p class="text-sm text-gray-500 mb-4">Customize your password with length and character options.</p>
+    <div class="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+      <h1 class="text-xl font-semibold mb-4"><i class="fas fa-tools"></i> Build Password</h1>
 
-      <label class="block text-gray-700">Length: <span>12</span></label>
-      <input type="range" min="8" max="32" value="12" class="w-full mb-4">
+      <label class="block mb-2">Length: <span id="length-value">12</span></label>
+      <input id="length" type="range" min="8" max="32" value="12" class="w-full mb-4">
 
       <div class="space-y-2 mb-4">
-        <label><input type="checkbox" checked> Uppercase (A–Z)</label><br>
-        <label><input type="checkbox" checked> Lowercase (a–z)</label><br>
-        <label><input type="checkbox" checked> Numbers (0–9)</label><br>
-        <label><input type="checkbox"> Symbols (!@#$)</label>
+        <label><input id="uppercase" type="checkbox" checked> Uppercase</label><br>
+        <label><input id="lowercase" type="checkbox" checked> Lowercase</label><br>
+        <label><input id="numbers" type="checkbox" checked> Numbers</label><br>
+        <label><input id="symbols" type="checkbox"> Symbols</label>
       </div>
 
-      <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"><i class="fas fa-sync"></i> Generate</button>
+      <button id="generate-btn" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full">
+        <i class="fas fa-sync"></i> Generate
+      </button>
 
-      <div class="mt-4">
-        <input type="text" readonly class="w-full border rounded px-3 py-2">
+      <div class="mt-4 flex">
+        <input id="password-output" type="text" readonly class="flex-1 border rounded px-3 py-2">
+        <button id="copy-btn" class="ml-2 px-3 bg-gray-200 rounded hover:bg-gray-300">
+          <i class="fas fa-copy"></i>
+        </button>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="text-center text-sm text-gray-500 py-4">
-    © 2025 PassGuard — All rights reserved
+    © 2025 PassGuard
   </footer>
 
+  <!-- Script -->
   <script src="build.js"></script>
-
 </body>
 </html>
