@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Build a Strong Password</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Build Strong Password — PassGuard</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col">
 
-  <nav class="bg-white shadow-md">
+  <!-- Navbar -->
+  <!-- Navbar -->
+<nav class="bg-white shadow-md">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <!-- Logo -->
     <a href="index.html" class="flex items-center space-x-2">
@@ -24,13 +27,43 @@
     </div>
   </div>
 </nav>
-  <!-- Navbar -->
-  <!-- include navbar code here -->
 
-  <main class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Build a Strong Password</h1>
-    <!-- paste your generator section here from your original code -->
+<!-- Footer -->
+<footer class="text-center text-sm text-gray-500 py-4">
+  © 2025 PassGuard — All rights reserved
+</footer>
+
+  <!-- (paste common navbar here) -->
+
+  <main class="flex-1 flex items-center justify-center p-6">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
+      <h1 class="text-lg font-semibold text-gray-800 mb-2">Build a Strong Password</h1>
+      <p class="text-sm text-gray-500 mb-4">Customize your password with length and character options.</p>
+
+      <!-- Password Builder UI -->
+      <div class="space-y-4">
+        <label class="block text-gray-700">Length: <span id="lengthValue">12</span></label>
+        <input id="length" type="range" min="8" max="32" value="12" class="w-full">
+
+        <div class="space-y-2">
+          <label><input type="checkbox" id="uppercase" checked> Uppercase (A–Z)</label><br>
+          <label><input type="checkbox" id="lowercase" checked> Lowercase (a–z)</label><br>
+          <label><input type="checkbox" id="numbers" checked> Numbers (0–9)</label><br>
+          <label><input type="checkbox" id="symbols"> Symbols (!@#$)</label>
+        </div>
+
+        <button id="generateBtn" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Generate</button>
+
+        <div class="mt-4">
+          <input id="passwordOutput" type="text" readonly class="w-full border rounded px-3 py-2">
+        </div>
+      </div>
+    </div>
   </main>
+
+  <!-- Footer -->
+  <!-- (paste common footer here) -->
+
+  <script src="builder.js"></script>
 </body>
 </html>
-
