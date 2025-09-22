@@ -1,32 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PassGuard — Password Strength Checker</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <title>PassGuard — Secure Your Passwords</title>
+  <link rel="icon" href="favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5842299194280974" crossorigin="anonymous"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9WWCMR32HX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-9WWCMR32HX");
-  </script>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col">
 
-  <!-- ✅ Navbar moved to body -->
+  <!-- NAVBAR (shared) -->
   <nav class="bg-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <!-- Logo -->
       <a href="index.html" class="flex items-center space-x-2">
         <img src="favicon.png" alt="Logo" class="h-8 w-8">
         <span class="font-bold text-indigo-600">PassGuard</span>
       </a>
-
-      <!-- Links -->
       <div class="space-x-6 text-gray-700 font-medium">
         <a href="build.html" class="hover:text-indigo-600">Build Password</a>
         <a href="check.html" class="hover:text-indigo-600">Check Strength</a>
@@ -35,22 +24,31 @@
     </div>
   </nav>
 
-  <!-- ✅ Main Content (here only checker for index.html) -->
+  <!-- MAIN -->
   <main class="flex-1 flex items-center justify-center p-6">
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
-      <h1 class="text-lg font-semibold text-gray-800 mb-2">Password Strength Checker</h1>
-      <p class="text-sm text-gray-500 mb-4">Real-time feedback, entropy estimate, and actionable suggestions.</p>
+    <div class="max-w-2xl w-full text-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to PassGuard 🔐</h1>
+      <p class="text-lg text-gray-600 mb-8">Build strong passwords and check their strength — everything runs locally in your browser.</p>
+      <div class="flex justify-center gap-4">
+        <a href="build.html" class="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">Build Password</a>
+        <a href="check.html" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300">Check Strength</a>
+      </div>
 
-      <!-- Password input etc... (your existing checker code goes here) -->
+      <section class="mt-10 bg-white rounded-2xl shadow-lg p-6 text-left">
+        <h2 class="text-lg font-semibold mb-2">Quick tips</h2>
+        <ul class="list-disc pl-5 text-gray-600">
+          <li>Use at least 12 characters (longer is better).</li>
+          <li>Mix uppercase, lowercase, numbers, and symbols.</li>
+          <li>Avoid common words & repeated sequences.</li>
+        </ul>
+      </section>
     </div>
   </main>
 
-  <!-- ✅ Footer (optional) -->
+  <!-- FOOTER (shared) -->
   <footer class="text-center text-sm text-gray-500 py-4">
     © 2025 PassGuard — All rights reserved
   </footer>
 
-  <!-- Scripts at bottom for performance -->
-  <script src="checker.js"></script>
 </body>
 </html>
