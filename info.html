@@ -21,47 +21,102 @@
   </nav>
 
   <!-- Hero -->
-  <header class="bg-gradient-to-r from-indigo-500 to-cyan-500 text-white text-center py-12">
-    <h1 class="text-3xl font-bold mb-3">The Story of Passwords</h1>
-    <p class="text-lg">From ancient codes to the future of digital identity</p>
+  <header class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white text-center py-12">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">The Story of Passwords</h1>
+    <p class="text-lg max-w-3xl mx-auto">
+      From secret words whispered in ancient times to the biometrics and passkeys of the future, passwords remain central to human security.
+    </p>
   </header>
 
   <!-- Content -->
-  <main class="max-w-5xl mx-auto px-6 py-12 space-y-16">
+  <main class="max-w-5xl mx-auto px-6 py-12 space-y-20">
+
+    <!-- Introduction -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-4">Why Passwords Matter</h2>
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        Passwords are the gatekeepers of our digital lives. They protect personal emails, bank accounts, healthcare records, 
+        and private conversations. Without strong password practices, even the most advanced systems can be left vulnerable.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        In this article, we explore the history of passwords, how they’re used today, and what the future may look like. 
+        Understanding their evolution helps us appreciate both their strengths and weaknesses in a rapidly changing digital world.
+      </p>
+    </section>
+
     <!-- History -->
     <section>
       <h2 class="text-2xl font-semibold mb-4">A Brief History of Passwords</h2>
-      <img src="https://source.unsplash.com/800x400/?history,ancient" alt="Password history" class="rounded-lg shadow mb-4">
-      <p class="text-gray-700 leading-relaxed">
-        Passwords have existed since ancient times — Roman soldiers used secret words to gain entry into camps. 
-        In the digital world, the first computer passwords appeared in the 1960s at MIT, where users needed a key phrase 
-        to access time-shared systems. This innovation set the stage for the security methods we use today.
+      <img src="assets/history.jpg" alt="Password history" class="rounded-lg shadow mb-6">
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        The earliest “passwords” can be traced back thousands of years. Ancient Roman soldiers used watchwords to gain 
+        access to guarded areas. These words changed daily and were passed carefully along the ranks.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        In the 1960s, at MIT, the Compatible Time-Sharing System (CTSS) became the first computer system to implement 
+        passwords. Each user had a private account and needed a password to log in. This innovation introduced a 
+        security model still in use today.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        By the 1990s, as the internet grew, password breaches began to surface. Hackers exploited weak or reused 
+        passwords, highlighting the need for stronger practices.
       </p>
     </section>
 
     <!-- Today -->
     <section>
       <h2 class="text-2xl font-semibold mb-4">Passwords Today</h2>
-      <img src="https://source.unsplash.com/800x400/?cybersecurity,password" alt="Modern passwords" class="rounded-lg shadow mb-4">
-      <p class="text-gray-700 leading-relaxed">
-        Today, passwords protect almost every part of our digital lives — from emails to banking. 
-        Security experts recommend using long, unique passwords and password managers to store them safely. 
-        Two-factor authentication (2FA) adds another layer of protection, making it much harder for attackers 
-        to gain access to accounts.
+      <img src="assets/today.jpg" alt="Modern password use" class="rounded-lg shadow mb-6">
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        In today’s world, passwords guard almost every aspect of digital identity. Unfortunately, studies show that 
+        many people still use weak passwords like “123456” or reuse the same password across multiple accounts.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        Security experts recommend long, unique passwords for every account. Password managers make this possible 
+        by generating and storing them securely. Two-factor authentication (2FA) further strengthens security by 
+        requiring an additional step, such as a phone code or fingerprint scan.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        In 2024, reports indicated that over 80% of data breaches involved compromised or weak passwords. This 
+        statistic underscores the importance of practicing good password hygiene.
       </p>
     </section>
 
     <!-- Future -->
     <section>
       <h2 class="text-2xl font-semibold mb-4">The Future of Passwords</h2>
-      <img src="https://source.unsplash.com/800x400/?technology,future" alt="Future security" class="rounded-lg shadow mb-4">
-      <p class="text-gray-700 leading-relaxed">
-        The future may see the end of traditional passwords. 
-        Biometric authentication (fingerprints, facial recognition) and passkeys are already replacing 
-        typed passwords in many apps. With advances in AI, security systems will become smarter, 
-        adapting to detect unusual behavior and prevent breaches in real time.
+      <img src="assets/future.jpg" alt="Future of security" class="rounded-lg shadow mb-6">
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        The future may see the decline of traditional typed passwords. Tech giants like Google and Apple are 
+        rolling out <strong>passkeys</strong> — unique digital keys stored on a user’s device, unlocked by biometrics 
+        or PINs. These are harder to steal or guess than conventional passwords.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed mb-4">
+        Biometrics, such as facial recognition and fingerprint scanning, are becoming mainstream. Combined with 
+        AI-driven authentication, future systems will analyze user behavior (typing speed, location, device) to 
+        detect unusual patterns and stop attackers in real time.
+      </p>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        While no system is flawless, these innovations point to a world where the stress of remembering dozens 
+        of complex passwords may finally come to an end.
       </p>
     </section>
+
+    <!-- Best Practices -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-4">Best Practices for Strong Passwords</h2>
+      <img src="assets/best-practices.jpg" alt="Password tips" class="rounded-lg shadow mb-6">
+      <ul class="list-disc pl-6 space-y-3 text-lg text-gray-700">
+        <li>Use at least 12–16 characters (longer is stronger).</li>
+        <li>Mix uppercase, lowercase, numbers, and special characters.</li>
+        <li>Avoid common words, names, or repeated sequences.</li>
+        <li>Never reuse the same password across different accounts.</li>
+        <li>Update your most important passwords regularly.</li>
+        <li>Use a password manager to generate and store complex passwords.</li>
+        <li>Enable two-factor authentication wherever possible.</li>
+      </ul>
+    </section>
+
   </main>
 
   <!-- Footer -->
